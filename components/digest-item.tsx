@@ -36,9 +36,10 @@ export function DigestItem({ item }: DigestItemProps) {
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <article className="group rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:shadow-foreground/5 hover:-translate-y-0.5">
-      <div className="flex items-start gap-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary/80">
+    <article className="group rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:shadow-foreground/5 sm:p-5 sm:hover:-translate-y-0.5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+        {/* Icon - hidden on mobile, shown on larger screens */}
+        <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary/80 sm:flex">
           {item.type === "tweet" ? (
             <Twitter className="h-5 w-5 text-chart-1" />
           ) : (
@@ -47,7 +48,40 @@ export function DigestItem({ item }: DigestItemProps) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          {/* Mobile: row with icon, source, score */}
+          <div className="flex items-start gap-3 sm:hidden">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary/80">
+              {item.type === "tweet" ? (
+                <Twitter className="h-4 w-4 text-chart-1" />
+              ) : (
+                <FileText className="h-4 w-4 text-chart-2" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground/80 truncate">{item.source}</span>
+                <span>·</span>
+                <time dateTime={item.publishedAt.toISOString()} suppressHydrationWarning>
+                  {formatDistanceToNow(item.publishedAt, { addSuffix: true })}
+                </time>
+              </div>
+            </div>
+            <div 
+              className={cn(
+                "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
+                item.relevanceScore >= 90 
+                  ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20" 
+                  : item.relevanceScore >= 80 
+                    ? "bg-gradient-to-br from-chart-1/15 to-chart-1/5 text-chart-1 ring-1 ring-chart-1/20"
+                    : "bg-secondary text-muted-foreground"
+              )}
+            >
+              {item.relevanceScore}
+            </div>
+          </div>
+
+          {/* Desktop: metadata row */}
+          <div className="hidden items-center gap-3 text-xs text-muted-foreground sm:flex">
             <span className="font-medium text-foreground/80">{item.source}</span>
             <span>·</span>
             <time dateTime={item.publishedAt.toISOString()} suppressHydrationWarning>
@@ -61,7 +95,7 @@ export function DigestItem({ item }: DigestItemProps) {
             )}
           </div>
 
-          <h3 className="mt-1.5 text-base font-medium leading-snug text-foreground">
+          <h3 className="mt-2 text-sm font-medium leading-snug text-foreground sm:mt-1.5 sm:text-base">
             {item.type === "tweet" ? (
               <span className="font-normal">{item.title}</span>
             ) : (
@@ -92,26 +126,27 @@ export function DigestItem({ item }: DigestItemProps) {
                 variant="outline"
                 className={cn("text-xs font-normal", tagColors[tag])}
               >
-                {tagLabels[tag]}
+                <span className="hidden sm:inline">{tagLabels[tag]}</span>
+                <span className="sm:hidden">{tag}</span>
               </Badge>
             ))}
             
-            <div className="ml-auto flex items-center gap-1">
+            <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                className="h-8 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground sm:gap-1.5 sm:px-3"
                 onClick={() => setExpanded(!expanded)}
               >
                 {expanded ? (
                   <>
                     <ChevronUp className="h-3.5 w-3.5" />
-                    Less
+                    <span className="hidden sm:inline">Less</span>
                   </>
                 ) : (
                   <>
                     <ChevronDown className="h-3.5 w-3.5" />
-                    More
+                    <span className="hidden sm:inline">More</span>
                   </>
                 )}
               </Button>
@@ -125,26 +160,27 @@ export function DigestItem({ item }: DigestItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                className="hidden h-8 w-8 text-muted-foreground hover:text-foreground sm:inline-flex"
               >
                 <Share2 className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-primary"
+                className="h-8 gap-1.5 px-2 text-xs text-muted-foreground hover:text-primary sm:px-3"
                 asChild
               >
                 <a href={item.url} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-3.5 w-3.5" />
-                  Open
+                  <span className="hidden sm:inline">Open</span>
                 </a>
               </Button>
             </div>
           </div>
         </div>
 
-        <div className="shrink-0 text-right">
+        {/* Desktop: relevance score */}
+        <div className="hidden shrink-0 text-right sm:block">
           <div 
             className={cn(
               "inline-flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold",

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar, MobileHeader } from "@/components/app-sidebar"
 import { TagInput } from "@/components/tag-input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -29,32 +29,34 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-background">
       <AppSidebar />
+      <MobileHeader />
       
-      <main className="pl-60">
-        <div className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-          <div className="flex h-16 items-center justify-between px-8">
+      <main className="lg:pl-60">
+        <div className="sticky top-14 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:top-0">
+          <div className="flex h-14 items-center justify-between px-4 lg:h-16 lg:px-8">
             <div>
-              <h1 className="text-lg font-semibold tracking-tight text-foreground">Interest Profile</h1>
-              <p className="text-sm text-muted-foreground">
+              <h1 className="text-base font-semibold tracking-tight text-foreground lg:text-lg">Interest Profile</h1>
+              <p className="hidden text-sm text-muted-foreground sm:block">
                 Define your editorial interests for AI filtering
               </p>
             </div>
             <Button onClick={handleSave} className="gap-2 shadow-sm">
               <Save className="h-4 w-4" />
-              {saved ? "Saved!" : "Save Profile"}
+              <span className="hidden sm:inline">{saved ? "Saved!" : "Save Profile"}</span>
+              <span className="sm:hidden">{saved ? "Saved!" : "Save"}</span>
             </Button>
           </div>
         </div>
 
-        <div className="p-8 max-w-4xl">
-          <div className="rounded-xl border border-border bg-card p-6 mb-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                <Sparkles className="h-6 w-6 text-primary" />
+        <div className="p-4 lg:p-8 lg:max-w-4xl">
+          <div className="rounded-xl border border-border bg-card p-4 mb-5 shadow-sm sm:p-6 sm:mb-6">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 sm:h-12 sm:w-12 sm:rounded-xl">
+                <Sparkles className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-foreground">How it works</h2>
-                <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                <h2 className="text-sm font-semibold text-foreground sm:text-base">How it works</h2>
+                <p className="mt-1 text-xs text-muted-foreground leading-relaxed sm:text-sm">
                   Your interest profile helps the AI evaluate content relevance. Articles and tweets are 
                   scored based on how well they match your topics, geographic focus, preferred authors, 
                   and keywords. The more specific your profile, the better the filtering.
@@ -63,14 +65,14 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="grid gap-5">
+          <div className="grid gap-4 sm:gap-5">
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-3 sm:pb-4">
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-chart-1" />
                   <CardTitle className="text-sm font-medium">Description</CardTitle>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   A brief description of your work and what kind of content you're looking for
                 </CardDescription>
               </CardHeader>
@@ -78,19 +80,19 @@ export default function ProfilePage() {
                 <Textarea
                   value={profile.description}
                   onChange={(e) => updateProfile("description", e.target.value)}
-                  className="min-h-[120px] bg-card border-border"
+                  className="min-h-[100px] bg-card border-border text-sm sm:min-h-[120px]"
                   placeholder="Describe your editorial focus..."
                 />
               </CardContent>
             </Card>
 
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-3 sm:pb-4">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-chart-1" />
                   <CardTitle className="text-sm font-medium">Topics</CardTitle>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   Subject areas you write about or want to stay informed on
                 </CardDescription>
               </CardHeader>
@@ -104,12 +106,12 @@ export default function ProfilePage() {
             </Card>
 
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-3 sm:pb-4">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-chart-2" />
                   <CardTitle className="text-sm font-medium">Geographic Focus</CardTitle>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   Regions, countries, or cities you focus on
                 </CardDescription>
               </CardHeader>
@@ -123,12 +125,12 @@ export default function ProfilePage() {
             </Card>
 
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-3 sm:pb-4">
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-chart-3" />
                   <CardTitle className="text-sm font-medium">Authors & Voices</CardTitle>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   Writers, researchers, or thought leaders whose work you follow
                 </CardDescription>
               </CardHeader>
@@ -142,12 +144,12 @@ export default function ProfilePage() {
             </Card>
 
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-3 sm:pb-4">
                 <div className="flex items-center gap-2">
                   <Hash className="h-4 w-4 text-chart-5" />
                   <CardTitle className="text-sm font-medium">Keywords</CardTitle>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   Specific terms, concepts, or phrases that indicate relevance
                 </CardDescription>
               </CardHeader>

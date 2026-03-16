@@ -44,17 +44,17 @@ export function DigestStats({ items }: DigestStatsProps) {
   ]
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {stats.map((stat) => (
         <Card key={stat.label} className="bg-card border-border shadow-sm">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary/80">
-                <stat.icon className={`h-5 w-5 ${stat.color}`} />
+          <CardContent className="p-3 sm:p-5">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/80 sm:h-11 sm:w-11 sm:rounded-xl">
+                <stat.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${stat.color}`} />
               </div>
               <div>
-                <p className="text-2xl font-semibold tracking-tight text-foreground">{stat.value}</p>
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                <p className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{stat.value}</p>
+                <p className="text-[10px] text-muted-foreground sm:text-xs">{stat.label}</p>
               </div>
             </div>
           </CardContent>
