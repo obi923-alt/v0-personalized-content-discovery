@@ -50,7 +50,7 @@ export function DigestItem({ item }: DigestItemProps) {
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="font-medium text-foreground/80">{item.source}</span>
             <span>·</span>
-            <time dateTime={item.publishedAt.toISOString()}>
+            <time dateTime={item.publishedAt.toISOString()} suppressHydrationWarning>
               {formatDistanceToNow(item.publishedAt, { addSuffix: true })}
             </time>
             {item.author && item.type === "article" && (
