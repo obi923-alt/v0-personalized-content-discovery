@@ -57,7 +57,7 @@ export function DigestList({ items }: DigestListProps) {
             placeholder="Search articles..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-secondary border-border"
+            className="pl-9 bg-card border-border shadow-sm"
           />
         </div>
 
@@ -117,14 +117,14 @@ export function DigestList({ items }: DigestListProps) {
         )}
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-6">
+      <div className="space-y-3">
         {filteredItems.length > 0 ? (
           filteredItems.map((item) => (
             <DigestItem key={item.id} item={item} />
           ))
         ) : (
-          <div className="py-12 text-center">
-            <Filter className="mx-auto h-12 w-12 text-muted-foreground/50" />
+          <div className="rounded-xl border border-border bg-card py-16 text-center">
+            <Filter className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <p className="mt-4 text-muted-foreground">No items match your filters</p>
           </div>
         )}

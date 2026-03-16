@@ -21,9 +21,9 @@ interface DigestItemProps {
 }
 
 const tagColors: Record<string, string> = {
-  essay: "bg-chart-1/20 text-chart-1 border-chart-1/30",
-  newsletter: "bg-chart-2/20 text-chart-2 border-chart-2/30",
-  social: "bg-chart-3/20 text-chart-3 border-chart-3/30",
+  essay: "bg-chart-1/10 text-chart-1 border-chart-1/20",
+  newsletter: "bg-chart-2/10 text-chart-2 border-chart-2/20",
+  social: "bg-chart-3/10 text-chart-3 border-chart-3/20",
 }
 
 const tagLabels: Record<string, string> = {
@@ -36,13 +36,13 @@ export function DigestItem({ item }: DigestItemProps) {
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <article className="group border-b border-border py-6 first:pt-0 last:border-0">
+    <article className="group rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:shadow-foreground/5 hover:-translate-y-0.5">
       <div className="flex items-start gap-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary/80">
           {item.type === "tweet" ? (
-            <Twitter className="h-5 w-5 text-muted-foreground" />
+            <Twitter className="h-5 w-5 text-chart-1" />
           ) : (
-            <FileText className="h-5 w-5 text-muted-foreground" />
+            <FileText className="h-5 w-5 text-chart-2" />
           )}
         </div>
 
@@ -147,12 +147,12 @@ export function DigestItem({ item }: DigestItemProps) {
         <div className="shrink-0 text-right">
           <div 
             className={cn(
-              "inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold",
+              "inline-flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold",
               item.relevanceScore >= 90 
-                ? "bg-primary/20 text-primary" 
+                ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20" 
                 : item.relevanceScore >= 80 
-                  ? "bg-chart-2/20 text-chart-2"
-                  : "bg-muted text-muted-foreground"
+                  ? "bg-gradient-to-br from-chart-1/15 to-chart-1/5 text-chart-1 ring-1 ring-chart-1/20"
+                  : "bg-secondary text-muted-foreground"
             )}
           >
             {item.relevanceScore}

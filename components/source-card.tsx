@@ -37,12 +37,12 @@ export function SourceCard({ source, onToggle, onDelete }: SourceCardProps) {
   const Icon = sourceIcons[source.type]
 
   return (
-    <Card className="bg-card border-border transition-colors hover:border-border/80">
-      <CardContent className="p-4">
+    <Card className="bg-card border-border shadow-sm transition-all hover:shadow-md hover:shadow-foreground/5 hover:-translate-y-0.5">
+      <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
-              <Icon className="h-5 w-5 text-muted-foreground" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/80">
+              <Icon className="h-5 w-5 text-chart-1" />
             </div>
             <div className="min-w-0">
               <h3 className="font-medium text-foreground truncate">{source.name}</h3>

@@ -42,29 +42,29 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background">
       <AppSidebar />
       
-      <main className="pl-64">
-        <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <main className="pl-60">
+        <div className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <div className="flex h-16 items-center justify-between px-8">
             <div>
-              <h1 className="text-xl font-semibold text-foreground">Settings</h1>
+              <h1 className="text-lg font-semibold tracking-tight text-foreground">Settings</h1>
               <p className="text-sm text-muted-foreground">
                 Configure your digest delivery
               </p>
             </div>
-            <Button onClick={handleSave} className="gap-2">
+            <Button onClick={handleSave} className="gap-2 shadow-sm">
               <Save className="h-4 w-4" />
               {saved ? "Saved!" : "Save Settings"}
             </Button>
           </div>
         </div>
 
-        <div className="p-8">
-          <div className="max-w-2xl space-y-6">
-            <Card className="border-border">
+        <div className="p-8 max-w-2xl">
+          <div className="space-y-5">
+            <Card className="border-border shadow-sm">
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <Mail className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-base">Email Delivery</CardTitle>
+                  <Mail className="h-4 w-4 text-chart-1" />
+                  <CardTitle className="text-sm font-medium">Email Delivery</CardTitle>
                 </div>
                 <CardDescription>
                   Configure where and when to receive your daily digest
@@ -78,7 +78,7 @@ export default function SettingsPage() {
                     type="email"
                     value={settings.email}
                     onChange={(e) => updateSettings("email", e.target.value)}
-                    className="bg-secondary border-border"
+                    className="bg-card border-border"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -89,7 +89,7 @@ export default function SettingsPage() {
                     type="time"
                     value={settings.deliveryTime}
                     onChange={(e) => updateSettings("deliveryTime", e.target.value)}
-                    className="bg-secondary border-border w-32"
+                    className="bg-card border-border w-32"
                   />
                   <p className="text-xs text-muted-foreground">
                     Your digest will be delivered daily at this time
@@ -110,11 +110,11 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border">
+            <Card className="border-border shadow-sm">
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <SlidersHorizontal className="h-5 w-5 text-chart-2" />
-                  <CardTitle className="text-base">Filtering</CardTitle>
+                  <SlidersHorizontal className="h-4 w-4 text-chart-2" />
+                  <CardTitle className="text-sm font-medium">Filtering</CardTitle>
                 </div>
                 <CardDescription>
                   Control how content is filtered and ranked
@@ -158,11 +158,11 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border">
+            <Card className="border-border shadow-sm">
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-chart-3" />
-                  <CardTitle className="text-base">Content Access</CardTitle>
+                  <Shield className="h-4 w-4 text-chart-2" />
+                  <CardTitle className="text-sm font-medium">Content Access</CardTitle>
                 </div>
                 <CardDescription>
                   Configure authentication for paywalled content
@@ -194,11 +194,11 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border">
+            <Card className="border-border shadow-sm">
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <Database className="h-5 w-5 text-chart-5" />
-                  <CardTitle className="text-base">Data</CardTitle>
+                  <Database className="h-4 w-4 text-chart-3" />
+                  <CardTitle className="text-sm font-medium">Data</CardTitle>
                 </div>
                 <CardDescription>
                   Manage your data and pipeline settings

@@ -58,11 +58,11 @@ export default function SourcesPage() {
     <div className="min-h-screen bg-background">
       <AppSidebar />
       
-      <main className="pl-64">
-        <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <main className="pl-60">
+        <div className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <div className="flex h-16 items-center justify-between px-8">
             <div>
-              <h1 className="text-xl font-semibold text-foreground">Sources</h1>
+              <h1 className="text-lg font-semibold tracking-tight text-foreground">Sources</h1>
               <p className="text-sm text-muted-foreground">
                 Manage your content sources
               </p>
@@ -71,53 +71,53 @@ export default function SourcesPage() {
           </div>
         </div>
 
-        <div className="p-8">
+        <div className="p-8 max-w-6xl">
           <div className="grid gap-4 sm:grid-cols-3 mb-8">
             <button
               onClick={() => setFilterType(filterType === "rss" ? null : "rss")}
-              className={`flex items-center gap-3 rounded-lg border p-4 transition-colors ${
+              className={`flex items-center gap-4 rounded-xl border p-5 transition-all shadow-sm ${
                 filterType === "rss" 
-                  ? "border-primary bg-primary/10" 
-                  : "border-border bg-card hover:border-border/80"
+                  ? "border-primary/50 bg-primary/5 shadow-primary/5" 
+                  : "border-border bg-card hover:shadow-md hover:shadow-foreground/5"
               }`}
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
-                <Rss className="h-5 w-5 text-primary" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary/80">
+                <Rss className="h-5 w-5 text-chart-1" />
               </div>
               <div className="text-left">
-                <p className="text-2xl font-semibold text-foreground">{typeCounts.rss}</p>
+                <p className="text-2xl font-semibold tracking-tight text-foreground">{typeCounts.rss}</p>
                 <p className="text-xs text-muted-foreground">RSS Feeds</p>
               </div>
             </button>
             <button
               onClick={() => setFilterType(filterType === "website" ? null : "website")}
-              className={`flex items-center gap-3 rounded-lg border p-4 transition-colors ${
+              className={`flex items-center gap-4 rounded-xl border p-5 transition-all shadow-sm ${
                 filterType === "website" 
-                  ? "border-primary bg-primary/10" 
-                  : "border-border bg-card hover:border-border/80"
+                  ? "border-primary/50 bg-primary/5 shadow-primary/5" 
+                  : "border-border bg-card hover:shadow-md hover:shadow-foreground/5"
               }`}
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary/80">
                 <Globe className="h-5 w-5 text-chart-2" />
               </div>
               <div className="text-left">
-                <p className="text-2xl font-semibold text-foreground">{typeCounts.website}</p>
+                <p className="text-2xl font-semibold tracking-tight text-foreground">{typeCounts.website}</p>
                 <p className="text-xs text-muted-foreground">Websites</p>
               </div>
             </button>
             <button
               onClick={() => setFilterType(filterType === "twitter" ? null : "twitter")}
-              className={`flex items-center gap-3 rounded-lg border p-4 transition-colors ${
+              className={`flex items-center gap-4 rounded-xl border p-5 transition-all shadow-sm ${
                 filterType === "twitter" 
-                  ? "border-primary bg-primary/10" 
-                  : "border-border bg-card hover:border-border/80"
+                  ? "border-primary/50 bg-primary/5 shadow-primary/5" 
+                  : "border-border bg-card hover:shadow-md hover:shadow-foreground/5"
               }`}
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary/80">
                 <Twitter className="h-5 w-5 text-chart-3" />
               </div>
               <div className="text-left">
-                <p className="text-2xl font-semibold text-foreground">{typeCounts.twitter}</p>
+                <p className="text-2xl font-semibold tracking-tight text-foreground">{typeCounts.twitter}</p>
                 <p className="text-xs text-muted-foreground">Twitter/X</p>
               </div>
             </button>
@@ -130,7 +130,7 @@ export default function SourcesPage() {
                 placeholder="Search sources..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 bg-secondary border-border"
+                className="pl-9 bg-card border-border shadow-sm"
               />
             </div>
             {filterType && (
