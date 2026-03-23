@@ -12,9 +12,9 @@ export function DigestStats({ items }: DigestStatsProps) {
   const articleCount = items.filter((item) => item.type === "article").length
   const tweetCount = items.filter((item) => item.type === "tweet").length
   const avgRelevance = Math.round(
-    items.reduce((acc, item) => acc + item.relevanceScore, 0) / items.length
-  )
-  const highRelevanceCount = items.filter((item) => item.relevanceScore >= 85).length
+    items.reduce((acc, item) => acc + item.relevance_score, 0) / items.length
+  ) || 0
+  const highRelevanceCount = items.filter((item) => item.relevance_score >= 85).length
 
   const stats = [
     {

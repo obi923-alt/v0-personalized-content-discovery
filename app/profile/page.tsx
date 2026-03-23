@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { AppSidebar, MobileHeader } from "@/components/app-sidebar"
 import { TagInput } from "@/components/tag-input"
 import { Button } from "@/components/ui/button"
@@ -11,19 +11,57 @@ import type { InterestProfile } from "@/lib/types"
 import { Save, Sparkles, MapPin, Users, Hash, FileText } from "lucide-react"
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<InterestProfile>(mockInterestProfile)
-  const [saved, setSaved] = useState(false)
+  const [profile, setProfile] = useState<InterestProfile>(mockInterestProfile);
+  const [saved, setSaved] = useState(false);
+  const [hasEditted,setHasEditted] = useState(false);
+  const [isSaving,setIsSaving] = useState(false);
 
-  const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch("/api/interest_profile")
+      const data = await response.json()
+      setProfile(data.items[0])
+      console.log("profile",data)
+    } catch(e) {
+      console.error("Error fetching profile",e)
+    }
   }
+
+  useEffect(() => {
+    fetchProfile()
+  }, [])
 
   const updateProfile = <K extends keyof InterestProfile>(
     key: K,
     value: InterestProfile[K]
   ) => {
     setProfile((prev) => ({ ...prev, [key]: value }))
+    setHasEditted(true)
+    console.log("updating profile with",profile)
+  }
+
+  const handleSaveProfile = async () => {
+    try {
+      setIsSaving(true);
+      setHasEditted(false)
+      const response = await fetch("/api/interest_profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profile),
+      })
+      const data = await response.json()
+      setSaved(true)
+      setTimeout(() =>{ 
+        setIsSaving(false)
+        setSaved(false)
+      }, 2000)
+    
+      console.log("profile updated",data)
+    } catch(e) {
+      console.error("Error updating profile",e)
+    }
   }
 
   return (
@@ -40,7 +78,7 @@ export default function ProfilePage() {
                 Define your editorial interests for AI filtering
               </p>
             </div>
-            <Button onClick={handleSave} className="gap-2 shadow-sm">
+            <Button onClick={handleSaveProfile} style={{cursor:"pointer"}} disabled={!hasEditted} className="gap-2 shadow-sm">
               <Save className="h-4 w-4" />
               <span className="hidden sm:inline">{saved ? "Saved!" : "Save Profile"}</span>
               <span className="sm:hidden">{saved ? "Saved!" : "Save"}</span>
@@ -117,8 +155,8 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent>
                 <TagInput
-                  tags={profile.geographicFocus}
-                  onChange={(tags) => updateProfile("geographicFocus", tags)}
+                  tags={profile.geographic_focus}
+                  onChange={(tags) => updateProfile("geographic_focus", tags)}
                   placeholder="Add a location and press Enter..."
                 />
               </CardContent>

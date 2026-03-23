@@ -1,3 +1,4 @@
+"use client"
 import { AppSidebar, MobileHeader } from "@/components/app-sidebar"
 import { DigestList } from "@/components/digest-list"
 import { DigestStats } from "@/components/digest-stats"
@@ -5,9 +6,43 @@ import { mockDigestItems } from "@/lib/mock-data"
 import { format } from "date-fns"
 import { RefreshCw, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
+import { useEffect, useState } from "react"
 export default function DigestPage() {
   const today = new Date()
+
+  const [digestItems, setDigestItems] = useState<[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0
+  })
+
+  useEffect(() => {
+    fetchDigestItems()
+  }, [pagination.page])
+  
+
+  const fetchDigestItems = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await fetch(`/api/digest_items?page=${pagination.page}&limit=${pagination.limit}`)
+      if (!response.ok) {
+        throw new Error("Failed to fetch digest items")
+      }
+      const data = await response.json()
+      console.log("the stuff",data.items)
+      setDigestItems(data.items)
+      setPagination(prev => ({ ...prev, total: data.total }))
+    } catch (error) {
+      console.error("Error fetching digest items:", error)
+      setError("Failed to fetch digest items")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,10 +72,10 @@ export default function DigestPage() {
         </div>
 
         <div className="p-4 lg:p-8 lg:max-w-6xl">
-          <DigestStats items={mockDigestItems} />
+          <DigestStats items={digestItems} />
           
           <div className="mt-6 lg:mt-8">
-            <DigestList items={mockDigestItems} />
+            <DigestList items={digestItems} />
           </div>
         </div>
       </main>
