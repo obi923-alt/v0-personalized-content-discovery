@@ -9,16 +9,17 @@ export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url)
         const page = parseInt(searchParams.get("page") || "1")
-        const limit = parseInt(searchParams.get("limit") || "10")
+        const limit = parseInt(searchParams.get("limit") || "20")
         const offset = (page - 1) * limit
 
         const [items, total] = await Promise.all([
             sql`
                 SELECT * FROM digest_items
+                WHERE created_at >= NOW() - INTERVAL '1 day'
                 ORDER BY created_at DESC
                 LIMIT ${limit} OFFSET ${offset}
             `,
-            sql`SELECT COUNT(*) FROM digest_items`
+            sql`SELECT COUNT(*) FROM digest_items WHERE created_at >= NOW() - INTERVAL '1 day'`
         ])
 
         return NextResponse.json({

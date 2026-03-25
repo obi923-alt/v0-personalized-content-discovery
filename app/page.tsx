@@ -7,6 +7,8 @@ import { format } from "date-fns"
 import { RefreshCw, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
+import emailjs from "@emailjs/browser"
+import { toast } from "sonner"
 export default function DigestPage() {
   const today = new Date()
 
@@ -44,6 +46,63 @@ export default function DigestPage() {
     }
   }
 
+  const handleSendDigest = async () => {
+    try {
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+
+      if (!serviceId || !templateId || !publicKey) {
+        toast.error("EmailJS configuration missing in environment variables.")
+        return
+      }
+
+      const topItems = digestItems.slice(0, 3)
+      const uniqueSources = new Set(digestItems.map((item: any) => item.source_name)).size
+      const avgRelevance = digestItems.length > 0 
+        ? Math.round(digestItems.reduce((acc: number, item: any) => acc + item.relevance_score, 0) / digestItems.length)
+        : 0
+
+      const templateParams: Record<string, any> = {
+        date: format(new Date(), "EEEE, MMMM d, yyyy"),
+        item_count: digestItems.length,
+        source_count: uniqueSources,
+        avg_relevance: avgRelevance,
+        recipient_name: "User",
+        dashboard_url: window.location.origin,
+        settings_url: `${window.location.origin}/settings`,
+        year: new Date().getFullYear()
+      }
+
+      // Map top 3 items
+      topItems.forEach((item: any, index: number) => {
+        const i = index + 1
+        templateParams[`item${i}_title`] = item.title
+        templateParams[`item${i}_source`] = item.source_name
+        templateParams[`item${i}_author`] = item.author || "Unknown Author"
+        templateParams[`item${i}_date`] = format(new Date(item.published_at), "MMM d")
+        templateParams[`item${i}_summary`] = item.summary
+        templateParams[`item${i}_relevance`] = item.relevance_score
+        templateParams[`item${i}_url`] = item.url
+        templateParams[`item${i}_type`] = item.type.charAt(0).toUpperCase() + item.type.slice(1)
+      })
+
+      const promise = emailjs.send(serviceId, templateId, templateParams, publicKey)
+
+      toast.promise(promise, {
+        loading: "Sending your daily digest...",
+        success: "Digest sent successfully to your email!",
+        error: "Failed to send digest. Please check your configuration.",
+      })
+
+      const res = await promise
+      console.log("EmailJS Response:", res)
+    } catch (e) {
+      console.error("Error sending digest:", e)
+      toast.error("An unexpected error occurred while sending the email.")
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <AppSidebar />
@@ -63,7 +122,7 @@ export default function DigestPage() {
                 <RefreshCw className="h-4 w-4" />
                 <span className="hidden sm:inline">Refresh</span>
               </Button>
-              <Button size="sm" className="gap-2 shadow-sm">
+              <Button onClick={handleSendDigest} size="sm" className="gap-2 shadow-sm">
                 <Mail className="h-4 w-4" />
                 <span className="hidden sm:inline">Send Digest</span>
               </Button>
