@@ -69,14 +69,14 @@ export function DigestItem({ item }: DigestItemProps) {
             <div 
               className={cn(
                 "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
-                item.relevance_score >= 90 
+                (item.relevance_score*10) >= 90 
                   ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20" 
-                  : item.relevance_score >= 80 
+                  : (item.relevance_score*10)  >= 80 
                     ? "bg-gradient-to-br from-chart-1/15 to-chart-1/5 text-chart-1 ring-1 ring-chart-1/20"
                     : "bg-secondary text-muted-foreground"
               )}
             >
-              {item.relevance_score}
+              {(item.relevance_score*10) }
             </div>
           </div>
 
@@ -184,14 +184,14 @@ export function DigestItem({ item }: DigestItemProps) {
           <div 
             className={cn(
               "inline-flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold",
-              item.relevance_score >= 90 
+              (item.relevance_score*10)  >= 90 
                 ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20" 
-                : item.relevance_score >= 80 
+                : (item.relevance_score*10)  >= 80 
                   ? "bg-gradient-to-br from-chart-1/15 to-chart-1/5 text-chart-1 ring-1 ring-chart-1/20"
                   : "bg-secondary text-muted-foreground"
             )}
           >
-            {item.relevance_score}
+            {(item.relevance_score*10) }
           </div>
         </div>
       </div>

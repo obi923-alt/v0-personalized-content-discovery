@@ -30,13 +30,15 @@ export default function SourcesPage() {
         const body = await res.json()
         throw new Error(body.error ?? "Failed to load sources")
       }
-      const data: Source[] = await res.json()
+      const data = await res.json()
+      console.log("SAUCES",data)
       setSources(
-        data.map((s) => ({
+        data.map((s: Source) => ({
           ...s,
           lastFetched: s.lastFetched ? new Date(s.lastFetched) : undefined,
         }))
       )
+  
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
     } finally {
@@ -112,14 +114,14 @@ export default function SourcesPage() {
       searchQuery === "" ||
       source.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       source.url.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesType = filterType === null || source.type === filterType
+    const matchesType = filterType === null || source.source_type === filterType
     return matchesSearch && matchesType
   })
 
   const typeCounts = {
-    rss:     sources.filter((s) => s.type === "rss").length,
-    website: sources.filter((s) => s.type === "website").length,
-    twitter: sources.filter((s) => s.type === "twitter").length,
+    rss:     sources.filter((s) => s.source_type === "rss").length,
+    website: sources.filter((s) => s.source_type === "website").length,
+    twitter: sources.filter((s) => s.source_type === "twitter").length,
   }
 
   // ── Render ───────────────────────────────────────────────────────────────

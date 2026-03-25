@@ -20,7 +20,7 @@ export interface Source {
   id: string
   name: string
   url: string
-  type: "rss" | "website" | "twitter"
+  source_type: "rss" | "website" | "twitter"
   category: string
   enabled: boolean
   lastFetched?: Date

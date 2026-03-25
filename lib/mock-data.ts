@@ -124,16 +124,16 @@ export const mockDigestItems: DigestItem[] = [
 ]
 
 export const mockSources: Source[] = [
-  { id: "1", name: "Brookings Institution", url: "https://brookings.edu/feed", type: "rss", category: "Think Tanks", enabled: true, lastFetched: new Date() },
-  { id: "2", name: "The Atlantic", url: "https://theatlantic.com", type: "website", category: "Magazines", enabled: true, lastFetched: new Date() },
-  { id: "3", name: "Niskanen Center", url: "https://niskanencenter.org/feed", type: "rss", category: "Think Tanks", enabled: true, lastFetched: new Date() },
-  { id: "4", name: "City Journal", url: "https://city-journal.org", type: "website", category: "Policy", enabled: true, lastFetched: new Date() },
-  { id: "5", name: "Bloomberg CityLab", url: "https://bloomberg.com/citylab", type: "rss", category: "Urban Policy", enabled: true, lastFetched: new Date() },
-  { id: "6", name: "Urban Institute", url: "https://urban.org/feed", type: "rss", category: "Think Tanks", enabled: true, lastFetched: new Date() },
-  { id: "7", name: "@urbanplanner", url: "https://twitter.com/urbanplanner", type: "twitter", category: "Twitter/X", enabled: true, lastFetched: new Date() },
-  { id: "8", name: "@pikicontrarian", url: "https://twitter.com/pikicontrarian", type: "twitter", category: "Twitter/X", enabled: true, lastFetched: new Date() },
-  { id: "9", name: "Transportation Research Board", url: "https://trb.org/feed", type: "rss", category: "Research", enabled: false, lastFetched: new Date() },
-  { id: "10", name: "Strong Towns", url: "https://strongtowns.org", type: "rss", category: "Urban Policy", enabled: true, lastFetched: new Date() },
+  { id: "1", name: "Brookings Institution", url: "https://brookings.edu/feed", source_type: "rss", category: "Think Tanks", enabled: true, lastFetched: new Date() },
+  { id: "2", name: "The Atlantic", url: "https://theatlantic.com", source_type: "website", category: "Magazines", enabled: true, lastFetched: new Date() },
+  { id: "3", name: "Niskanen Center", url: "https://niskanencenter.org/feed", source_type: "rss", category: "Think Tanks", enabled: true, lastFetched: new Date() },
+  { id: "4", name: "City Journal", url: "https://city-journal.org", source_type: "website", category: "Policy", enabled: true, lastFetched: new Date() },
+  { id: "5", name: "Bloomberg CityLab", url: "https://bloomberg.com/citylab", source_type: "rss", category: "Urban Policy", enabled: true, lastFetched: new Date() },
+  { id: "6", name: "Urban Institute", url: "https://urban.org/feed", source_type: "rss", category: "Think Tanks", enabled: true, lastFetched: new Date() },
+  { id: "7", name: "@urbanplanner", url: "https://twitter.com/urbanplanner", source_type: "twitter", category: "Twitter/X", enabled: true, lastFetched: new Date() },
+  { id: "8", name: "@pikicontrarian", url: "https://twitter.com/pikicontrarian", source_type: "twitter", category: "Twitter/X", enabled: true, lastFetched: new Date() },
+  { id: "9", name: "Transportation Research Board", url: "https://trb.org/feed", source_type: "rss", category: "Research", enabled: false, lastFetched: new Date() },
+  { id: "10", name: "Strong Towns", url: "https://strongtowns.org", source_type: "rss", category: "Urban Policy", enabled: true, lastFetched: new Date() },
 ]
 
 export const mockInterestProfile: InterestProfile = {
