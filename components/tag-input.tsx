@@ -33,7 +33,7 @@ export function TagInput({ tags, onChange, placeholder = "Add item..." }: TagInp
   return (
     <div className="rounded-md border border-input bg-secondary p-2">
       <div className="flex flex-wrap gap-2">
-        {tags.map((tag) => (
+        {tags?.map((tag) => (
           <Badge
             key={tag}
             variant="secondary"
@@ -54,7 +54,7 @@ export function TagInput({ tags, onChange, placeholder = "Add item..." }: TagInp
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={tags.length === 0 ? placeholder : ""}
+          placeholder={tags?.length === 0 ? placeholder : ""}
           className="flex-1 min-w-[120px] border-0 bg-transparent p-0 h-7 focus-visible:ring-0 focus-visible:ring-offset-0"
         />
       </div>

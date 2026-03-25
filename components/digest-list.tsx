@@ -27,7 +27,7 @@ export function DigestList({ items }: DigestListProps) {
       const matchesSearch = searchQuery === "" || 
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.source.toLowerCase().includes(searchQuery.toLowerCase())
+        item.source_name.toLowerCase().includes(searchQuery.toLowerCase())
       
       const matchesTags = selectedTags.length === 0 || 
         selectedTags.some((tag) => item.tags.includes(tag))
@@ -36,9 +36,9 @@ export function DigestList({ items }: DigestListProps) {
     })
     .sort((a, b) => {
       if (sortBy === "relevance") {
-        return b.relevanceScore - a.relevanceScore
+        return b.relevance_score - a.relevance_score
       }
-      return b.publishedAt.getTime() - a.publishedAt.getTime()
+      return b.published_at.getTime() - a.published_at.getTime()
     })
 
   const toggleTag = (tag: ContentTag) => {

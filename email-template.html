@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Your Daily Content Digest</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    /* ===== RESET ===== */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; }
+
+    /* ===== RESPONSIVE ===== */
+    @media only screen and (max-width: 620px) {
+      .email-container { width: 100% !important; padding: 12px !important; }
+      .article-card { padding: 16px !important; }
+      .header-title { font-size: 22px !important; }
+      .article-title { font-size: 15px !important; }
+      .article-summary { font-size: 13px !important; }
+      .stats-cell { display: block !important; width: 100% !important; padding: 6px 0 !important; }
+      .stats-divider { display: none !important; }
+    }
+  </style>
+</head>
+
+<!--
+  COLOR MAP (from globals.css dark mode):
+  ──────────────────────────────────────────
+  background:        oklch(0.15 0.01 250)  ≈ #212435  (deep navy)
+  card:              oklch(0.18 0.01 250)  ≈ #282b3e  (card surface)
+  secondary/muted:   oklch(0.22 0.01 250)  ≈ #31354a  (elevated surface)
+  border:            oklch(0.28 0.01 250)  ≈ #3e425a  (subtle dividers)
+  muted-foreground:  oklch(0.6 0.005 90)   ≈ #919191  (secondary text)
+  foreground:        oklch(0.95 0.005 90)  ≈ #f2f1ee  (primary text)
+  primary:           oklch(0.65 0.1 200)   ≈ #5ba8b8  (teal — links, CTAs)
+  accent:            oklch(0.7 0.08 165)   ≈ #71b5a2  (green-teal)
+  chart-1:           oklch(0.65 0.1 200)   ≈ #5ba8b8  (teal)
+  chart-2:           oklch(0.7 0.08 165)   ≈ #71b5a2  (green-teal)
+  chart-5:           oklch(0.7 0.12 45)    ≈ #c88a5e  (warm amber — high relevance)
+  sidebar:           oklch(0.13 0.01 250)  ≈ #1b1e2f  (darkest surface)
+-->
+
+<body style="margin: 0; padding: 0; background-color: #212435; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+
+  <!-- Preheader (hidden preview text) -->
+  <div style="display: none; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #212435;">
+    Your personalized content digest for {{date}} — {{item_count}} curated items ranked by relevance.
+  </div>
+
+  <!-- Full-width wrapper -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #212435;">
+    <tr>
+      <td align="center" style="padding: 24px 16px;">
+
+        <!-- Email container (max 600px) -->
+        <table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%;">
+
+          <!-- ======================== HEADER ======================== -->
+          <tr>
+            <td style="padding: 32px 32px 24px; background: linear-gradient(135deg, #1b1e2f 0%, #212435 50%, #282b3e 100%); border-radius: 16px 16px 0 0; border: 1px solid #3e425a; border-bottom: none; text-align: center;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <!-- Logo -->
+                <tr>
+                  <td align="center" style="padding-bottom: 16px;">
+                    <div style="display: inline-block; width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, #5ba8b8 0%, #4a9bab 100%); text-align: center; line-height: 48px; font-size: 20px;">
+                      ✦
+                    </div>
+                  </td>
+                </tr>
+                <!-- Title -->
+                <tr>
+                  <td align="center">
+                    <h1 class="header-title" style="margin: 0; font-size: 26px; font-weight: 700; color: #f2f1ee; letter-spacing: -0.5px;">
+                      Daily Digest
+                    </h1>
+                    <p style="margin: 8px 0 0; font-size: 14px; color: #919191; font-weight: 400;">
+                      {{date}}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ======================== STATS BAR ======================== -->
+          <tr>
+            <td style="background-color: #282b3e; padding: 16px 32px; border-left: 1px solid #3e425a; border-right: 1px solid #3e425a; border-bottom: 1px solid #3e425a;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td class="stats-cell" width="33%" style="text-align: center; padding: 4px 0;">
+                    <span style="display: block; font-size: 20px; font-weight: 700; color: #5ba8b8;">{{item_count}}</span>
+                    <span style="display: block; font-size: 11px; color: #919191; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Items</span>
+                  </td>
+                  <td class="stats-cell stats-divider" width="33%" style="text-align: center; padding: 4px 0; border-left: 1px solid #3e425a; border-right: 1px solid #3e425a;">
+                    <span style="display: block; font-size: 20px; font-weight: 700; color: #71b5a2;">{{source_count}}</span>
+                    <span style="display: block; font-size: 11px; color: #919191; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Sources</span>
+                  </td>
+                  <td class="stats-cell" width="33%" style="text-align: center; padding: 4px 0;">
+                    <span style="display: block; font-size: 20px; font-weight: 700; color: #c88a5e;">{{avg_relevance}}%</span>
+                    <span style="display: block; font-size: 11px; color: #919191; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Avg. Relevance</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ======================== INTRO ======================== -->
+          <tr>
+            <td style="background-color: #282b3e; padding: 24px 32px 8px; border-left: 1px solid #3e425a; border-right: 1px solid #3e425a;">
+              <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #919191;">
+                Hi {{recipient_name}}, here are today's top curated articles and posts, ranked by relevance to your interests.
+              </p>
+            </td>
+          </tr>
+
+          <!-- ======================== ARTICLE CARDS ======================== -->
+          <!--
+            In your EmailJS template, repeat this block for each digest item.
+            Replace the {{...}} variables with your actual template variables.
+            Duplicate this <tr> block for as many items as needed (item4, item5, etc.)
+          -->
+
+          <!-- ──── Article 1 ──── -->
+          <tr>
+            <td style="background-color: #282b3e; padding: 12px 32px; border-left: 1px solid #3e425a; border-right: 1px solid #3e425a;">
+              <table role="presentation" class="article-card" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #31354a; border-radius: 10px; border: 1px solid #3e425a; padding: 20px;">
+                <tr>
+                  <td>
+                    <!-- Badges row -->
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="padding-bottom: 10px;">
+                          <!-- Relevance badge (high = amber, normal = teal) -->
+                          <span style="display: inline-block; background-color: rgba(200, 138, 94, 0.15); color: #c88a5e; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(200, 138, 94, 0.25); letter-spacing: 0.3px;">
+                            {{item1_relevance}}% match
+                          </span>
+                          <!-- Type tag -->
+                          <span style="display: inline-block; background-color: rgba(91, 168, 184, 0.12); color: #5ba8b8; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(91, 168, 184, 0.2); margin-left: 6px;">
+                            {{item1_type}}
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Title (linked) -->
+                    <a href="{{item1_url}}" class="article-title" style="display: block; font-size: 16px; font-weight: 600; color: #f2f1ee; text-decoration: none; line-height: 1.4; margin-bottom: 8px;">
+                      {{item1_title}}
+                    </a>
+
+                    <!-- Meta row -->
+                    <p style="margin: 0 0 10px; font-size: 12px; color: #919191;">
+                      {{item1_author}} · {{item1_source}} · {{item1_date}}
+                    </p>
+
+                    <!-- Summary -->
+                    <p class="article-summary" style="margin: 0 0 14px; font-size: 14px; line-height: 1.6; color: #919191;">
+                      {{item1_summary}}
+                    </p>
+
+                    <!-- Read more -->
+                    <a href="{{item1_url}}" style="display: inline-block; font-size: 13px; font-weight: 600; color: #5ba8b8; text-decoration: none;">
+                      Read article →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ──── Article 2 ──── -->
+          <tr>
+            <td style="background-color: #282b3e; padding: 12px 32px; border-left: 1px solid #3e425a; border-right: 1px solid #3e425a;">
+              <table role="presentation" class="article-card" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #31354a; border-radius: 10px; border: 1px solid #3e425a; padding: 20px;">
+                <tr>
+                  <td>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="padding-bottom: 10px;">
+                          <span style="display: inline-block; background-color: rgba(200, 138, 94, 0.15); color: #c88a5e; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(200, 138, 94, 0.25); letter-spacing: 0.3px;">
+                            {{item2_relevance}}% match
+                          </span>
+                          <span style="display: inline-block; background-color: rgba(113, 181, 162, 0.12); color: #71b5a2; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(113, 181, 162, 0.2); margin-left: 6px;">
+                            {{item2_type}}
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                    <a href="{{item2_url}}" class="article-title" style="display: block; font-size: 16px; font-weight: 600; color: #f2f1ee; text-decoration: none; line-height: 1.4; margin-bottom: 8px;">
+                      {{item2_title}}
+                    </a>
+                    <p style="margin: 0 0 10px; font-size: 12px; color: #919191;">
+                      {{item2_author}} · {{item2_source}} · {{item2_date}}
+                    </p>
+                    <p class="article-summary" style="margin: 0 0 14px; font-size: 14px; line-height: 1.6; color: #919191;">
+                      {{item2_summary}}
+                    </p>
+                    <a href="{{item2_url}}" style="display: inline-block; font-size: 13px; font-weight: 600; color: #5ba8b8; text-decoration: none;">
+                      Read article →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ──── Article 3 ──── -->
+          <tr>
+            <td style="background-color: #282b3e; padding: 12px 32px; border-left: 1px solid #3e425a; border-right: 1px solid #3e425a;">
+              <table role="presentation" class="article-card" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #31354a; border-radius: 10px; border: 1px solid #3e425a; padding: 20px;">
+                <tr>
+                  <td>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="padding-bottom: 10px;">
+                          <span style="display: inline-block; background-color: rgba(91, 168, 184, 0.15); color: #5ba8b8; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(91, 168, 184, 0.25); letter-spacing: 0.3px;">
+                            {{item3_relevance}}% match
+                          </span>
+                          <span style="display: inline-block; background-color: rgba(91, 168, 184, 0.12); color: #5ba8b8; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(91, 168, 184, 0.2); margin-left: 6px;">
+                            {{item3_type}}
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                    <a href="{{item3_url}}" class="article-title" style="display: block; font-size: 16px; font-weight: 600; color: #f2f1ee; text-decoration: none; line-height: 1.4; margin-bottom: 8px;">
+                      {{item3_title}}
+                    </a>
+                    <p style="margin: 0 0 10px; font-size: 12px; color: #919191;">
+                      {{item3_author}} · {{item3_source}} · {{item3_date}}
+                    </p>
+                    <p class="article-summary" style="margin: 0 0 14px; font-size: 14px; line-height: 1.6; color: #919191;">
+                      {{item3_summary}}
+                    </p>
+                    <a href="{{item3_url}}" style="display: inline-block; font-size: 13px; font-weight: 600; color: #5ba8b8; text-decoration: none;">
+                      Read article →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!--
+            ============================================================
+            COPY MORE ARTICLE BLOCKS ABOVE AS NEEDED (item4, item5, etc.)
+            ============================================================
+          -->
+
+          <!-- ======================== VIEW ALL CTA ======================== -->
+          <tr>
+            <td style="background-color: #282b3e; padding: 24px 32px; text-align: center; border-left: 1px solid #3e425a; border-right: 1px solid #3e425a;">
+              <a href="{{dashboard_url}}" style="display: inline-block; background: linear-gradient(135deg, #5ba8b8 0%, #4a9bab 100%); color: #f2f1ee; font-size: 14px; font-weight: 600; text-decoration: none; padding: 12px 32px; border-radius: 10px; letter-spacing: 0.3px;">
+                View Full Digest →
+              </a>
+            </td>
+          </tr>
+
+          <!-- ======================== DIVIDER ======================== -->
+          <tr>
+            <td style="background-color: #282b3e; padding: 0 32px; border-left: 1px solid #3e425a; border-right: 1px solid #3e425a;">
+              <div style="height: 1px; background-color: #3e425a;"></div>
+            </td>
+          </tr>
+
+          <!-- ======================== FOOTER ======================== -->
+          <tr>
+            <td style="background-color: #282b3e; padding: 24px 32px; border-radius: 0 0 16px 16px; border: 1px solid #3e425a; border-top: none; text-align: center;">
+              <p style="margin: 0 0 8px; font-size: 12px; color: #6b6b6b;">
+                This digest was curated based on your
+                <a href="{{settings_url}}" style="color: #5ba8b8; text-decoration: underline;">interest profile</a>.
+              </p>
+              <p style="margin: 0 0 16px; font-size: 12px; color: #6b6b6b;">
+                Adjust your preferences or unsubscribe in
+                <a href="{{settings_url}}" style="color: #5ba8b8; text-decoration: underline;">settings</a>.
+              </p>
+              <p style="margin: 0; font-size: 11px; color: #4a4a5a;">
+                © {{year}} Personalized Content Discovery · All rights reserved
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Email container -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

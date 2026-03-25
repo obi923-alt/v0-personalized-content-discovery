@@ -6,12 +6,12 @@ export interface DigestItem {
   id: string
   type: ContentType
   title: string
-  source: string
+  source_name: string
   author?: string
   url: string
-  publishedAt: Date
+  published_at: Date
   summary: string
-  relevanceScore: number
+  relevance_score: number
   tags: ContentTag[]
   imageUrl?: string
 }
@@ -28,7 +28,7 @@ export interface Source {
 
 export interface InterestProfile {
   topics: string[]
-  geographicFocus: string[]
+  geographic_focus: string[]
   authors: string[]
   keywords: string[]
   description: string
