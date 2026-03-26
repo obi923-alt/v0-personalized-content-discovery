@@ -57,28 +57,23 @@ export default function SourcesPage() {
         throw new Error(body.error ?? "Failed to add source")
       }
       const created: Source = await res.json()
-      setSources((prev) => [...prev, {
-        ...created,
-        lastFetched: created.lastFetched ? new Date(created.lastFetched) : undefined,
-      }])
+      setSources((prev) => [
+        ...prev,
+        { ...created, lastFetched: created.lastFetched ? new Date(created.lastFetched) : undefined },
+      ])
     } catch (err) {
-      // Surface the error — you could also show a toast here
       setError(err instanceof Error ? err.message : "Failed to add source")
     }
   }
 
   // ── Delete → persists to DB ──────────────────────────────────────────────
   const handleDelete = async (id: string) => {
-    // Optimistic update: remove from UI immediately
     setSources((prev) => prev.filter((s) => s.id !== id))
     try {
       const res = await fetch(`/api/sources?id=${id}`, { method: "DELETE" })
-      if (!res.ok) {
-        // Roll back if the server call fails
-        loadSources()
-      }
+      if (!res.ok) loadSources()
     } catch {
-      loadSources() // roll back
+      loadSources()
     }
   }
 
@@ -95,15 +90,30 @@ export default function SourcesPage() {
     }
     const updated: Source = await res.json()
     setSources((prev) =>
-      prev.map((s) => s.id === id ? { ...updated, lastFetched: updated.lastFetched ? new Date(updated.lastFetched) : undefined } : s)
+      prev.map((s) =>
+        s.id === id
+          ? { ...updated, lastFetched: updated.lastFetched ? new Date(updated.lastFetched) : undefined }
+          : s
+      )
     )
   }
 
-  // ── Toggle (local only) ──────────────────────────────────────────────────
-  const handleToggle = (id: string, enabled: boolean) => {
+  // ── Toggle → persists enabled to DB ─────────────────────────────────────
+  const handleToggle = async (id: string, enabled: boolean) => {
+    // Optimistic update
     setSources((prev) =>
       prev.map((s) => (s.id === id ? { ...s, enabled } : s))
     )
+    try {
+      const res = await fetch(`/api/sources?id=${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled }),
+      })
+      if (!res.ok) loadSources() // roll back on failure
+    } catch {
+      loadSources() // roll back on error
+    }
   }
 
   // ── Derived state ────────────────────────────────────────────────────────
@@ -252,7 +262,6 @@ export default function SourcesPage() {
                 /* ── Empty state ── */
                 <div className="rounded-xl border border-dashed border-border bg-card/50 p-12 text-center">
                   {searchQuery || filterType ? (
-                    // Filtered empty state
                     <>
                       <Search className="mx-auto h-10 w-10 text-muted-foreground/40" />
                       <p className="mt-4 text-sm font-medium text-muted-foreground">No sources match your search</p>
@@ -267,7 +276,6 @@ export default function SourcesPage() {
                       </Button>
                     </>
                   ) : (
-                    // Truly empty — no sources at all
                     <>
                       <Rss className="mx-auto h-10 w-10 text-muted-foreground/40" />
                       <p className="mt-4 text-sm font-medium text-foreground">No sources yet</p>

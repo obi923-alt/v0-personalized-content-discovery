@@ -8,6 +8,19 @@ const getDb = () => {
   return neon(process.env.DATABASE_URL)
 }
 
+// ── Shared row → Source mapper ────────────────────────────────────────────────
+function rowToSource(row: Record<string, unknown>): Source {
+  return {
+    id:          String(row.id),
+    name:        row.name as string,
+    url:         row.url as string,
+    type:        row.type as Source["type"],
+    category:    (row.category as string) ?? "",
+    enabled:     (row.enabled as boolean) ?? true,
+    lastFetched: row.last_crawled ? new Date(row.last_crawled as string) : undefined,
+  }
+}
+
 // ── GET /api/sources ──────────────────────────────────────────────────────────
 export async function GET() {
   try {
@@ -17,16 +30,7 @@ export async function GET() {
       FROM sources
       ORDER BY name ASC
     `
-    const sources: Source[] = rows.map((row) => ({
-      id:          String(row.id),
-      name:        row.name,
-      url:         row.url,
-      type:        row.type,
-      category:    row.category ?? "",
-      enabled:     row.enabled ?? true,
-      lastFetched: row.last_crawled ? new Date(row.last_crawled) : undefined,
-    }))
-    return NextResponse.json(sources)
+    return NextResponse.json(rows.map(rowToSource))
   } catch (err) {
     console.error("GET /api/sources:", err)
     return NextResponse.json(
@@ -51,16 +55,7 @@ export async function POST(req: NextRequest) {
       VALUES (${name}, ${url}, ${type}, ${category ?? ""}, true)
       RETURNING id, name, url, type, category, enabled, last_crawled
     `
-    const source: Source = {
-      id:          String(rows[0].id),
-      name:        rows[0].name,
-      url:         rows[0].url,
-      type:        rows[0].type,
-      category:    rows[0].category ?? "",
-      enabled:     rows[0].enabled ?? true,
-      lastFetched: rows[0].last_crawled ? new Date(rows[0].last_crawled) : undefined,
-    }
-    return NextResponse.json(source, { status: 201 })
+    return NextResponse.json(rowToSource(rows[0]), { status: 201 })
   } catch (err) {
     console.error("POST /api/sources:", err)
     return NextResponse.json(
@@ -71,6 +66,9 @@ export async function POST(req: NextRequest) {
 }
 
 // ── PATCH /api/sources?id=123 ─────────────────────────────────────────────────
+// Handles two shapes:
+//   { enabled: boolean }              → toggle only
+//   { name, url, type, category }     → full field update
 export async function PATCH(req: NextRequest) {
   try {
     const sql = getDb()
@@ -80,7 +78,24 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "id is required" }, { status: 400 })
     }
 
-    const { name, url, type, category } = await req.json()
+    const body = await req.json()
+
+    // ── Toggle-only update ──────────────────────────────────────────────────
+    if ("enabled" in body && Object.keys(body).length === 1) {
+      const rows = await sql`
+        UPDATE sources
+        SET enabled = ${body.enabled}
+        WHERE id = ${id}
+        RETURNING id, name, url, type, category, enabled, last_crawled
+      `
+      if (rows.length === 0) {
+        return NextResponse.json({ error: "Source not found" }, { status: 404 })
+      }
+      return NextResponse.json(rowToSource(rows[0]))
+    }
+
+    // ── Full field update ───────────────────────────────────────────────────
+    const { name, url, type, category } = body
 
     if (!name || !url || !type) {
       return NextResponse.json({ error: "name, url, and type are required" }, { status: 400 })
@@ -88,25 +103,17 @@ export async function PATCH(req: NextRequest) {
 
     const rows = await sql`
       UPDATE sources
-      SET name = ${name}, url = ${url}, type = ${type}, category = ${category ?? ""}
+      SET name     = ${name},
+          url      = ${url},
+          type     = ${type},
+          category = ${category ?? ""}
       WHERE id = ${id}
       RETURNING id, name, url, type, category, enabled, last_crawled
     `
-
     if (rows.length === 0) {
       return NextResponse.json({ error: "Source not found" }, { status: 404 })
     }
-
-    const source: Source = {
-      id:          String(rows[0].id),
-      name:        rows[0].name,
-      url:         rows[0].url,
-      type:        rows[0].type,
-      category:    rows[0].category ?? "",
-      enabled:     rows[0].enabled ?? true,
-      lastFetched: rows[0].last_crawled ? new Date(rows[0].last_crawled) : undefined,
-    }
-    return NextResponse.json(source)
+    return NextResponse.json(rowToSource(rows[0]))
   } catch (err) {
     console.error("PATCH /api/sources:", err)
     return NextResponse.json(
