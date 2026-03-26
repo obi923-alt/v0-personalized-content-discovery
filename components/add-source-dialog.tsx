@@ -24,26 +24,12 @@ import { Plus, Loader2 } from "lucide-react"
 import type { Source } from "@/lib/types"
 
 interface AddSourceDialogProps {
-  // Add mode
   onAdd?: (source: Omit<Source, "id" | "enabled" | "lastFetched">) => Promise<void>
-  // Edit mode
   source?: Source
   onEdit?: (id: string, updates: Omit<Source, "id" | "enabled" | "lastFetched">) => Promise<void>
-  // Controlled open state (used by SourceCard to open programmatically)
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
-
-const categories = [
-  "Think Tanks",
-  "Magazines",
-  "Policy",
-  "Urban Policy",
-  "Research",
-  "Twitter/X",
-  "Blogs",
-  "News",
-]
 
 export function AddSourceDialog({ onAdd, source, onEdit, open: controlledOpen, onOpenChange }: AddSourceDialogProps) {
   const isEditMode = !!source && !!onEdit
@@ -55,13 +41,11 @@ export function AddSourceDialog({ onAdd, source, onEdit, open: controlledOpen, o
   const [type, setType]                 = useState<"rss" | "website" | "twitter">("rss")
   const [category, setCategory]         = useState("")
 
-  // Use controlled open state if provided, otherwise internal
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
   const setOpen = (val: boolean) => {
     onOpenChange ? onOpenChange(val) : setInternalOpen(val)
   }
 
-  // Populate fields when opening in edit mode
   useEffect(() => {
     if (open && isEditMode) {
       setName(source.name)
@@ -70,7 +54,6 @@ export function AddSourceDialog({ onAdd, source, onEdit, open: controlledOpen, o
       setCategory(source.category ?? "")
     }
     if (!open) {
-      // Reset when closing
       if (!isEditMode) {
         setName("")
         setUrl("")
@@ -99,7 +82,6 @@ export function AddSourceDialog({ onAdd, source, onEdit, open: controlledOpen, o
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {/* Only render a trigger button in add mode (edit mode is opened externally) */}
       {!isEditMode && (
         <DialogTrigger asChild>
           <Button className="gap-2">
@@ -152,18 +134,12 @@ export function AddSourceDialog({ onAdd, source, onEdit, open: controlledOpen, o
             </div>
             <div className="grid gap-2">
               <Label htmlFor="category">Category</Label>
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                id="category"
+                placeholder="e.g., Think Tanks"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              />
             </div>
           </div>
           <DialogFooter>
