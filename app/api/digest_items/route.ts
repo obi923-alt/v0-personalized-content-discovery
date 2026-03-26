@@ -15,12 +15,13 @@ export async function GET(request: NextRequest) {
         const [items, total] = await Promise.all([
             sql`
                 SELECT * FROM digest_items
-                WHERE created_at >= NOW() - INTERVAL '1 day'
+                WHERE created_at >= NOW() - INTERVAL '1 day' OR saved = True
                 ORDER BY created_at DESC
                 LIMIT ${limit} OFFSET ${offset}
             `,
             sql`SELECT COUNT(*) FROM digest_items WHERE created_at >= NOW() - INTERVAL '1 day'`
         ])
+        
 
         return NextResponse.json({
             items,
@@ -31,5 +32,16 @@ export async function GET(request: NextRequest) {
     } catch (error) {
         console.error("Error fetching digest items:", error)
         return NextResponse.json({ error: "Failed to fetch digest items" }, { status: 500 })
+    }
+}
+
+export async function POST(request: NextRequest) {
+    try {
+        const { id } = await request.json()
+        await sql`UPDATE digest_items SET saved = NOT saved WHERE id = ${id}`
+        return NextResponse.json({ success: true })
+    } catch (error) {
+        console.error("Error saving digest item:", error)
+        return NextResponse.json({ error: "Failed to save digest item" }, { status: 500 })
     }
 }

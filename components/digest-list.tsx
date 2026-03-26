@@ -21,6 +21,7 @@ export function DigestList({ items }: DigestListProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTags, setSelectedTags] = useState<ContentTag[]>([])
   const [sortBy, setSortBy] = useState<"relevance" | "date">("relevance")
+  const [filterSaved, setFilterSaved] = useState(false)
 
   const filteredItems = items
     .filter((item) => {
@@ -32,13 +33,14 @@ export function DigestList({ items }: DigestListProps) {
       const matchesTags = selectedTags.length === 0 || 
         selectedTags.some((tag) => item.tags.includes(tag))
       
-      return matchesSearch && matchesTags
+      const matchesSaved = filterSaved ? item.saved : true
+      return matchesSearch && matchesTags && matchesSaved
     })
     .sort((a, b) => {
       if (sortBy === "relevance") {
         return b.relevance_score - a.relevance_score
       }
-      return b.published_at.getTime() - a.published_at.getTime()
+      return new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
     })
 
   const toggleTag = (tag: ContentTag) => {
@@ -46,6 +48,11 @@ export function DigestList({ items }: DigestListProps) {
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     )
   }
+
+  const handleFilterSaved = () => {
+    setFilterSaved((prev) => !prev)
+  }
+
 
   return (
     <div>
@@ -73,6 +80,14 @@ export function DigestList({ items }: DigestListProps) {
                 {tag === "essay" ? "Essays" : tag === "newsletter" ? "Newsletter" : "Social"}
               </Button>
             ))}
+                 <Button
+                variant={filterSaved ? "default" : "outline"}
+                size="sm"
+                onClick={handleFilterSaved}
+                className="text-xs whitespace-nowrap"
+              >
+                Saved
+              </Button>
           </div>
 
           <DropdownMenu>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -24,6 +24,8 @@ const navigation = [
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
+
+  const lastUpdated = localStorage.getItem("last_updates")
 
   return (
     <div className="flex h-full flex-col">
@@ -60,7 +62,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         <div className="rounded-lg bg-sidebar-accent/60 p-3.5">
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Last updated</p>
           <p className="mt-0.5 text-sm font-medium text-sidebar-foreground">
-            Today at 7:00 AM
+            Today at {lastUpdated}
           </p>
         </div>
       </div>
