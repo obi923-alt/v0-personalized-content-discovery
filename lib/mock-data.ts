@@ -11,6 +11,7 @@ export const mockDigestItems: DigestItem[] = [
     published_at: new Date("2026-03-16T08:00:00"),
     summary: "A comprehensive analysis of how major American cities are investing in resilient infrastructure to combat rising temperatures and extreme weather events. The report highlights innovative approaches from Philadelphia, Phoenix, and Seattle.",
     relevance_score: 95,
+    saved: true,
     tags: ["essay", "newsletter"],
   },
   {
@@ -23,6 +24,7 @@ export const mockDigestItems: DigestItem[] = [
     published_at: new Date("2026-03-16T06:30:00"),
     summary: "Ohio, Michigan, and Pennsylvania are experiencing a resurgence in advanced manufacturing, driven by EV battery plants and semiconductor fabs. This shift is reshaping local economies and workforce dynamics.",
     relevance_score: 92,
+    saved: true,
     tags: ["essay"],
   },
   {
@@ -35,6 +37,7 @@ export const mockDigestItems: DigestItem[] = [
     published_at: new Date("2026-03-16T07:15:00"),
     summary: "Viral thread discussing the economic benefits of walkable urban design, citing new research from MIT's Center for Real Estate.",
     relevance_score: 88,
+    saved: true,
     tags: ["social"],
   },
   {
@@ -47,6 +50,7 @@ export const mockDigestItems: DigestItem[] = [
     published_at: new Date("2026-03-15T14:00:00"),
     summary: "An argument for focusing on institutional design rather than specific policies. Wright contends that well-designed institutions can self-correct over time, while poorly designed ones will corrupt even good policies.",
     relevance_score: 86,
+    saved: true,
     tags: ["essay", "newsletter"],
   },
   {
@@ -59,6 +63,7 @@ export const mockDigestItems: DigestItem[] = [
     published_at: new Date("2026-03-15T10:00:00"),
     summary: "Downtown areas in mid-sized cities are struggling to adapt to permanent remote work patterns. This analysis examines the fiscal implications for municipal budgets dependent on commercial property taxes.",
     relevance_score: 84,
+    saved: true,
     tags: ["newsletter"],
   },
   {
@@ -71,6 +76,7 @@ export const mockDigestItems: DigestItem[] = [
     published_at: new Date("2026-03-15T16:45:00"),
     summary: "Data-driven analysis showing how regulatory barriers and labor shortages are constraining housing supply in key metropolitan areas.",
     relevance_score: 81,
+    saved: true,
     tags: ["social", "newsletter"],
   },
   {
@@ -83,6 +89,7 @@ export const mockDigestItems: DigestItem[] = [
     published_at: new Date("2026-03-15T09:00:00"),
     summary: "Detailed analysis of which transit systems have recovered and why. Frequency, safety improvements, and fare policy emerge as key differentiators.",
     relevance_score: 79,
+    saved: true,
     tags: ["essay"],
   },
   {
@@ -95,6 +102,7 @@ export const mockDigestItems: DigestItem[] = [
     published_at: new Date("2026-03-14T11:00:00"),
     summary: "Fragmented local governments create coordination failures in transportation, housing, and economic development. This paper proposes models for voluntary regional cooperation.",
     relevance_score: 77,
+    saved: true,
     tags: ["essay", "newsletter"],
   },
   {
@@ -107,6 +115,7 @@ export const mockDigestItems: DigestItem[] = [
     published_at: new Date("2026-03-14T08:30:00"),
     summary: "Case studies from Tulsa, Bentonville, and Chattanooga show how strategic incentive programs and quality-of-life investments attract high-income remote workers.",
     relevance_score: 75,
+    saved: true,
     tags: ["newsletter"],
   },
   {
@@ -119,6 +128,7 @@ export const mockDigestItems: DigestItem[] = [
     published_at: new Date("2026-03-14T19:20:00"),
     summary: "Historian shares primary source_name documents revealing the intentional displacement effects of interstate highway construction through American cities.",
     relevance_score: 73,
+    saved: true,
     tags: ["social"],
   },
 ]

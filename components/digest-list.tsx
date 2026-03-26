@@ -15,9 +15,10 @@ import {
 
 interface DigestListProps {
   items: DigestItemType[]
+  loading:boolean
 }
 
-export function DigestList({ items }: DigestListProps) {
+export function DigestList({ items, loading }: DigestListProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTags, setSelectedTags] = useState<ContentTag[]>([])
   const [sortBy, setSortBy] = useState<"relevance" | "date">("relevance")
@@ -55,6 +56,16 @@ export function DigestList({ items }: DigestListProps) {
 
 
   return (
+    loading? <>
+    <div style={{width:"100%",height:"60vh"}} className="flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <p className="text-muted-foreground">Loading your personalized digest...</p>
+      </div>
+    </div>
+    
+    </>
+    :
     <div>
       <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <div className="relative w-full sm:flex-1 sm:max-w-md">

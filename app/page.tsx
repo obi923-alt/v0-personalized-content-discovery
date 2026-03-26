@@ -62,7 +62,7 @@ localStorage.setItem(
         return
       }
 
-      const topItems = digestItems.slice(0, 3)
+      const topItems = digestItems.slice(0, 10)
       const uniqueSources = new Set(digestItems.map((item: any) => item.source_name)).size
       const avgRelevance = digestItems.length > 0 
         ? Math.round(digestItems.reduce((acc: number, item: any) => acc + item.relevance_score, 0) / digestItems.length)
@@ -139,7 +139,7 @@ localStorage.setItem(
           <DigestStats items={digestItems} />
           
           <div className="mt-6 lg:mt-8">
-            <DigestList items={digestItems} />
+            <DigestList loading={loading} items={digestItems} />
           </div>
         </div>
       </main>
