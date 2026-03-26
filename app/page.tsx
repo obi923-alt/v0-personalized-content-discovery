@@ -20,6 +20,7 @@ export default function DigestPage() {
     limit: 20,
     total: 0
   })
+  const [email,setEmail] = useState("")
 
   useEffect(() => {
     fetchDigestItems()
@@ -51,11 +52,29 @@ localStorage.setItem(
     }
   }
 
+  const fetchSettings = async () =>{
+    try {
+      const response = await fetch(`/api/settings`)
+      if (!response.ok) {
+        throw new Error("Failed to fetch settings")
+      }
+      const data = await response.json()
+      setEmail(data.email)
+      console.log("the settings",data)
+    } catch (error) {
+      console.error("Error fetching settings:", error)
+    }
+  }
+  useEffect(() => {
+    fetchSettings()
+  }, [])
+
   const handleSendDigest = async () => {
     try {
       const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
       const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID
       const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+      const url = process.env.NEXT_PUBLIC_BASE_URL
 
       if (!serviceId || !templateId || !publicKey) {
         toast.error("EmailJS configuration missing in environment variables.")
@@ -74,9 +93,10 @@ localStorage.setItem(
         source_count: uniqueSources,
         avg_relevance: avgRelevance,
         recipient_name: "User",
-        dashboard_url: window.location.origin,
-        settings_url: `${window.location.origin}/settings`,
-        year: new Date().getFullYear()
+        dashboard_url: url,
+        settings_url: `${url}/settings`,
+        year: new Date().getFullYear(),
+        email: email
       }
 
       // Map top 3 items
