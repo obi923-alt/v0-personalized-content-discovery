@@ -25,7 +25,7 @@ const navigation = [
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
 
-  const lastUpdated = localStorage.getItem("last_updates") || "00:00 AM"
+  const lastUpdated = typeof window !== 'undefined' ? localStorage.getItem("last_updates") || "00:00 AM" : "00:00 AM"
 
   return (
     <div className="flex h-full flex-col">
