@@ -13,6 +13,7 @@ export interface DigestItem {
   summary: string
   relevance_score: number
   tags: ContentTag[]
+  saved: boolean
   imageUrl?: string
 }
 

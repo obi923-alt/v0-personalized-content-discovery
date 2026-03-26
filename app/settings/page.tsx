@@ -109,11 +109,11 @@ export default function SettingsPage() {
               <h1 className="text-base font-semibold tracking-tight text-foreground lg:text-lg">
                 Settings
               </h1>
-              <p className="hidden text-sm text-muted-foreground sm:block">
+              {/* <p className="hidden text-sm text-muted-foreground sm:block">
                 {settings.updatedAt
                   ? `Last saved ${formatDistanceToNow(new Date(settings.updatedAt), { addSuffix: true })}`
                   : "Configure your digest delivery"}
-              </p>
+              </p> */}
             </div>
             <Button onClick={handleSave} disabled={saving || loading} className="gap-2 shadow-sm">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" />
@@ -223,7 +223,7 @@ export default function SettingsPage() {
                     <Slider
                       value={[settings.maxItems]}
                       onValueChange={([v]) => update("maxItems", v)}
-                      min={10} max={50} step={5}
+                      min={10} max={30} step={5}
                     />
                     <p className="text-xs text-muted-foreground">
                       Maximum number of items to include in each digest
@@ -237,7 +237,7 @@ export default function SettingsPage() {
                     <Slider
                       value={[settings.relevanceThreshold]}
                       onValueChange={([v]) => update("relevanceThreshold", v)}
-                      min={50} max={95} step={5}
+                      min={30} max={95} step={5}
                     />
                     <p className="text-xs text-muted-foreground">
                       Only include items with relevance scores above this threshold
@@ -247,7 +247,7 @@ export default function SettingsPage() {
               </Card>
 
               {/* Content Access */}
-              <Card className="border-border shadow-sm">
+              {/* <Card className="border-border shadow-sm">
                 <CardHeader className="pb-3 sm:pb-4">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4 text-chart-2" />
@@ -281,10 +281,10 @@ export default function SettingsPage() {
                     </Button>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
               {/* Data */}
-              <Card className="border-border shadow-sm">
+              {/* <Card className="border-border shadow-sm">
                 <CardHeader className="pb-3 sm:pb-4">
                   <div className="flex items-center gap-2">
                     <Database className="h-4 w-4 text-chart-3" />
@@ -317,7 +317,7 @@ export default function SettingsPage() {
                     <Button variant="destructive" size="sm" className="w-full sm:w-auto">Reset</Button>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
             </div>
           )}

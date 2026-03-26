@@ -17,7 +17,7 @@ export default function DigestPage() {
   const [error, setError] = useState<string | null>(null)
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 10,
+    limit: 20,
     total: 0
   })
 
@@ -38,6 +38,11 @@ export default function DigestPage() {
       console.log("the stuff",data.items)
       setDigestItems(data.items)
       setPagination(prev => ({ ...prev, total: data.total }))
+      localStorage.clear();
+localStorage.setItem(
+  "last_updates",
+  new Date(data.items[0].created_at) .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+);
     } catch (error) {
       console.error("Error fetching digest items:", error)
       setError("Failed to fetch digest items")
@@ -57,7 +62,7 @@ export default function DigestPage() {
         return
       }
 
-      const topItems = digestItems.slice(0, 3)
+      const topItems = digestItems.slice(0, 10)
       const uniqueSources = new Set(digestItems.map((item: any) => item.source_name)).size
       const avgRelevance = digestItems.length > 0 
         ? Math.round(digestItems.reduce((acc: number, item: any) => acc + item.relevance_score, 0) / digestItems.length)
@@ -118,10 +123,10 @@ export default function DigestPage() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="gap-2 shadow-sm">
+              {/* <Button variant="outline" size="sm" className="gap-2 shadow-sm">
                 <RefreshCw className="h-4 w-4" />
                 <span className="hidden sm:inline">Refresh</span>
-              </Button>
+              </Button> */}
               <Button onClick={handleSendDigest} size="sm" className="gap-2 shadow-sm">
                 <Mail className="h-4 w-4" />
                 <span className="hidden sm:inline">Send Digest</span>
@@ -134,7 +139,7 @@ export default function DigestPage() {
           <DigestStats items={digestItems} />
           
           <div className="mt-6 lg:mt-8">
-            <DigestList items={digestItems} />
+            <DigestList loading={loading} items={digestItems} />
           </div>
         </div>
       </main>

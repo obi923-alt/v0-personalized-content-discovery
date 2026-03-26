@@ -15,12 +15,14 @@ import {
 
 interface DigestListProps {
   items: DigestItemType[]
+  loading:boolean
 }
 
-export function DigestList({ items }: DigestListProps) {
+export function DigestList({ items, loading }: DigestListProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTags, setSelectedTags] = useState<ContentTag[]>([])
   const [sortBy, setSortBy] = useState<"relevance" | "date">("relevance")
+  const [filterSaved, setFilterSaved] = useState(false)
 
   const filteredItems = items
     .filter((item) => {
@@ -32,13 +34,14 @@ export function DigestList({ items }: DigestListProps) {
       const matchesTags = selectedTags.length === 0 || 
         selectedTags.some((tag) => item.tags.includes(tag))
       
-      return matchesSearch && matchesTags
+      const matchesSaved = filterSaved ? item.saved : true
+      return matchesSearch && matchesTags && matchesSaved
     })
     .sort((a, b) => {
       if (sortBy === "relevance") {
         return b.relevance_score - a.relevance_score
       }
-      return b.published_at.getTime() - a.published_at.getTime()
+      return new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
     })
 
   const toggleTag = (tag: ContentTag) => {
@@ -47,7 +50,22 @@ export function DigestList({ items }: DigestListProps) {
     )
   }
 
+  const handleFilterSaved = () => {
+    setFilterSaved((prev) => !prev)
+  }
+
+
   return (
+    loading? <>
+    <div style={{width:"100%",height:"60vh"}} className="flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <p className="text-muted-foreground">Loading your personalized digest...</p>
+      </div>
+    </div>
+    
+    </>
+    :
     <div>
       <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <div className="relative w-full sm:flex-1 sm:max-w-md">
@@ -73,6 +91,14 @@ export function DigestList({ items }: DigestListProps) {
                 {tag === "essay" ? "Essays" : tag === "newsletter" ? "Newsletter" : "Social"}
               </Button>
             ))}
+                 <Button
+                variant={filterSaved ? "default" : "outline"}
+                size="sm"
+                onClick={handleFilterSaved}
+                className="text-xs whitespace-nowrap"
+              >
+                Saved
+              </Button>
           </div>
 
           <DropdownMenu>

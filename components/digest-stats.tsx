@@ -9,7 +9,7 @@ interface DigestStatsProps {
 }
 
 export function DigestStats({ items }: DigestStatsProps) {
-  const articleCount = items.filter((item) => item.type === "article").length
+  const articleCount = items.filter((item) => item.type !== "tweet").length
   const tweetCount = items.filter((item) => item.type === "tweet").length
   const avgRelevance = Math.round(
     items.reduce((acc, item) => acc + item.relevance_score, 0) / items.length

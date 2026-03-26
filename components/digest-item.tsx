@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -33,7 +33,26 @@ const tagLabels: Record<string, string> = {
 }
 
 export function DigestItem({ item }: DigestItemProps) {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(false);
+  const [isSaved, setIsSaved] = useState(item.saved);
+  const handleSaveItem = async ()=>{
+    try {
+      const response = await fetch("/api/digest_items", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: item.id }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setIsSaved(!isSaved);
+      }
+    } catch(e){
+      console.error("Error saving digest item:", e);
+    }
+
+  }
 
   return (
     <article className="group rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:shadow-foreground/5 sm:p-5 sm:hover:-translate-y-0.5">
@@ -151,19 +170,21 @@ export function DigestItem({ item }: DigestItemProps) {
                 )}
               </Button>
               <Button
+                style={{cursor:"pointer"}}
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={handleSaveItem}
               >
-                <Bookmark className="h-4 w-4" />
+                <Bookmark fill={isSaved ? "currentColor" : "none"} className="h-4 w-4" />
               </Button>
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="icon"
                 className="hidden h-8 w-8 text-muted-foreground hover:text-foreground sm:inline-flex"
               >
                 <Share2 className="h-4 w-4" />
-              </Button>
+              </Button> */}
               <Button
                 variant="ghost"
                 size="sm"
