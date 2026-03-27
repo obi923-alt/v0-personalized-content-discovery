@@ -15,6 +15,7 @@ export interface DigestItem {
   tags: ContentTag[]
   saved: boolean
   imageUrl?: string
+  feedback: "thumbs_up" | "thumbs_down" | null
 }
 
 export interface Source {

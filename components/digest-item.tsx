@@ -1,18 +1,19 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { DigestItem as DigestItemType } from "@/lib/types"
-import { 
-  ExternalLink, 
-  Bookmark, 
-  Share2, 
+import {
+  ExternalLink,
+  Bookmark,
   ChevronDown,
   ChevronUp,
   FileText,
-  Twitter
+  Twitter,
+  ThumbsUp,
+  ThumbsDown
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
@@ -26,38 +27,57 @@ const tagColors: Record<string, string> = {
   social: "bg-chart-3/10 text-chart-3 border-chart-3/20",
 }
 
-const tagLabels: Record<string, string> = {
-  essay: "Essay Inspiration",
-  newsletter: "Newsletter",
-  social: "Social Share",
-}
+type Feedback = "thumbs_up" | "thumbs_down" | null
 
 export function DigestItem({ item }: DigestItemProps) {
-  const [expanded, setExpanded] = useState(false);
-  const [isSaved, setIsSaved] = useState(item.saved);
-  const handleSaveItem = async ()=>{
+  const [expanded, setExpanded] = useState(false)
+  const [isSaved, setIsSaved] = useState(item.saved)
+  const [feedback, setFeedback] = useState<Feedback>(
+    (item.feedback as Feedback) ?? null
+  )
+
+  const handleSaveItem = async () => {
     try {
       const response = await fetch("/api/digest_items", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: item.id }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        setIsSaved(!isSaved);
-      }
-    } catch(e){
-      console.error("Error saving digest item:", e);
+      })
+      const data = await response.json()
+      if (data.success) setIsSaved(!isSaved)
+    } catch (e) {
+      console.error("Error saving digest item:", e)
     }
+  }
 
+  const handleFeedback = async (value: "thumbs_up" | "thumbs_down") => {
+    const previous = feedback
+    // Optimistic update — toggle off if same value
+    const next: Feedback = feedback === value ? null : value
+    setFeedback(next)
+
+    try {
+      const response = await fetch("/api/digest_items", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: item.id, feedback: value }),
+      })
+      const data = await response.json()
+      if (!data.success) {
+        // Revert on failure
+        setFeedback(previous)
+      }
+    } catch (e) {
+      console.error("Error submitting feedback:", e)
+      setFeedback(previous)
+    }
   }
 
   return (
     <article className="group rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:shadow-foreground/5 sm:p-5 sm:hover:-translate-y-0.5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        {/* Icon - hidden on mobile, shown on larger screens */}
+
+        {/* Icon - desktop only */}
         <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary/80 sm:flex">
           {item.type === "tweet" ? (
             <Twitter className="h-5 w-5 text-chart-1" />
@@ -67,7 +87,8 @@ export function DigestItem({ item }: DigestItemProps) {
         </div>
 
         <div className="min-w-0 flex-1">
-          {/* Mobile: row with icon, source, score */}
+
+          {/* Mobile: icon + source + score row */}
           <div className="flex items-start gap-3 sm:hidden">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary/80">
               {item.type === "tweet" ? (
@@ -78,23 +99,23 @@ export function DigestItem({ item }: DigestItemProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="font-medium text-foreground/80 truncate">{item.source_name}</span>
+                <span className="font-medium text-foreground/80 truncate">
+                  {item.source_name}
+                </span>
                 <span>·</span>
                 <time dateTime={item.published_at.toString()} suppressHydrationWarning>
                   {formatDistanceToNow(item.published_at, { addSuffix: true })}
                 </time>
               </div>
             </div>
-            <div 
-              className={cn(
-                "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
-                item.relevance_score >= 90 
-                  ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20" 
-                  : item.relevance_score >= 80 
-                    ? "bg-gradient-to-br from-chart-1/15 to-chart-1/5 text-chart-1 ring-1 ring-chart-1/20"
-                    : "bg-secondary text-muted-foreground"
-              )}
-            >
+            <div className={cn(
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
+              item.relevance_score >= 90
+                ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20"
+                : item.relevance_score >= 80
+                  ? "bg-gradient-to-br from-chart-1/15 to-chart-1/5 text-chart-1 ring-1 ring-chart-1/20"
+                  : "bg-secondary text-muted-foreground"
+            )}>
               {item.relevance_score}
             </div>
           </div>
@@ -114,13 +135,14 @@ export function DigestItem({ item }: DigestItemProps) {
             )}
           </div>
 
+          {/* Title */}
           <h3 className="mt-2 text-sm font-medium leading-snug text-foreground sm:mt-1.5 sm:text-base">
             {item.type === "tweet" ? (
               <span className="font-normal">{item.title}</span>
             ) : (
-              <a 
-                href={item.url} 
-                target="_blank" 
+              <a
+                href={item.url}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-primary transition-colors"
               >
@@ -129,6 +151,7 @@ export function DigestItem({ item }: DigestItemProps) {
             )}
           </h3>
 
+          {/* Expandable summary */}
           <div className={cn(
             "mt-3 overflow-hidden transition-all duration-300",
             expanded ? "max-h-96" : "max-h-0"
@@ -138,19 +161,21 @@ export function DigestItem({ item }: DigestItemProps) {
             </p>
           </div>
 
+          {/* Tags + actions */}
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {item.tags.map((tag) => (
-              <Badge 
-                key={tag} 
+              <Badge
+                key={tag}
                 variant="outline"
                 className={cn("text-xs font-normal", tagColors["newsletter"])}
               >
-                <span className="hidden sm:inline">{tag}</span>
-                <span className="sm:hidden">{tag}</span>
+                {tag}
               </Badge>
             ))}
-            
+
             <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
+
+              {/* Expand / collapse */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -169,22 +194,60 @@ export function DigestItem({ item }: DigestItemProps) {
                   </>
                 )}
               </Button>
+
+              {/* Thumbs up */}
               <Button
-                style={{cursor:"pointer"}}
                 variant="ghost"
                 size="icon"
+                title="Relevant"
+                className={cn(
+                  "h-8 w-8 transition-colors",
+                  feedback === "thumbs_up"
+                    ? "text-chart-2 hover:text-chart-2"
+                    : "text-muted-foreground hover:text-chart-2"
+                )}
+                onClick={() => handleFeedback("thumbs_up")}
+              >
+                <ThumbsUp
+                  className="h-4 w-4"
+                  fill={feedback === "thumbs_up" ? "currentColor" : "none"}
+                />
+              </Button>
+
+              {/* Thumbs down */}
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Not relevant"
+                className={cn(
+                  "h-8 w-8 transition-colors",
+                  feedback === "thumbs_down"
+                    ? "text-destructive hover:text-destructive"
+                    : "text-muted-foreground hover:text-destructive"
+                )}
+                onClick={() => handleFeedback("thumbs_down")}
+              >
+                <ThumbsDown
+                  className="h-4 w-4"
+                  fill={feedback === "thumbs_down" ? "currentColor" : "none"}
+                />
+              </Button>
+
+              {/* Bookmark */}
+              <Button
+                variant="ghost"
+                size="icon"
+                style={{ cursor: "pointer" }}
                 className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 onClick={handleSaveItem}
               >
-                <Bookmark fill={isSaved ? "currentColor" : "none"} className="h-4 w-4" />
+                <Bookmark
+                  fill={isSaved ? "currentColor" : "none"}
+                  className="h-4 w-4"
+                />
               </Button>
-              {/* <Button
-                variant="ghost"
-                size="icon"
-                className="hidden h-8 w-8 text-muted-foreground hover:text-foreground sm:inline-flex"
-              >
-                <Share2 className="h-4 w-4" />
-              </Button> */}
+
+              {/* Open link */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -196,25 +259,25 @@ export function DigestItem({ item }: DigestItemProps) {
                   <span className="hidden sm:inline">Open</span>
                 </a>
               </Button>
+
             </div>
           </div>
         </div>
 
         {/* Desktop: relevance score */}
         <div className="hidden shrink-0 text-right sm:block">
-          <div 
-            className={cn(
-              "inline-flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold",
-              item.relevance_score >= 90 
-                ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20" 
-                : item.relevance_score >= 80 
-                  ? "bg-gradient-to-br from-chart-1/15 to-chart-1/5 text-chart-1 ring-1 ring-chart-1/20"
-                  : "bg-secondary text-muted-foreground"
-            )}
-          >
+          <div className={cn(
+            "inline-flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold",
+            item.relevance_score >= 90
+              ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20"
+              : item.relevance_score >= 80
+                ? "bg-gradient-to-br from-chart-1/15 to-chart-1/5 text-chart-1 ring-1 ring-chart-1/20"
+                : "bg-secondary text-muted-foreground"
+          )}>
             {item.relevance_score}
           </div>
         </div>
+
       </div>
     </article>
   )
