@@ -140,7 +140,7 @@ export function DigestItem({ item }: DigestItemProps) {
             {item.type === "tweet" ? (
               <span className="font-normal">{item.title}</span>
             ) : (
-              
+              <a
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
