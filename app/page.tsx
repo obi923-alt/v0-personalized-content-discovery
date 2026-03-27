@@ -22,36 +22,6 @@ export default function DigestPage() {
   })
   const [email,setEmail] = useState("")
 
-  useEffect(() => {
-    fetchDigestItems()
-  }, [pagination.page])
-  
-
-  const fetchDigestItems = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await fetch(`/api/digest_items?page=${pagination.page}&limit=${pagination.limit}`)
-      if (!response.ok) {
-        throw new Error("Failed to fetch digest items")
-      }
-      const data = await response.json()
-      console.log("the stuff",data.items)
-      setDigestItems(data.items)
-      setPagination(prev => ({ ...prev, total: data.total }))
-      localStorage.clear();
-localStorage.setItem(
-  "last_updates",
-  new Date(data.items[0].created_at) .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-);
-    } catch (error) {
-      console.error("Error fetching digest items:", error)
-      setError("Failed to fetch digest items")
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const fetchSettings = async () =>{
     try {
       const response = await fetch(`/api/settings`)
@@ -68,6 +38,39 @@ localStorage.setItem(
   useEffect(() => {
     fetchSettings()
   }, [])
+
+
+  useEffect(() => {
+    fetchDigestItems()
+  }, [pagination.page])
+  
+
+  const fetchDigestItems = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await fetch(`/api/digest_items?page=${pagination.page}&limit=${pagination.limit}`)
+      if (!response.ok) {
+        throw new Error("Failed to fetch digest items")
+      }
+      const data = await response.json()
+      console.log("the stuff",data.items)
+      console.log("his name",email)
+      setDigestItems(data.items)
+      setPagination(prev => ({ ...prev, total: data.total }))
+      localStorage.clear();
+localStorage.setItem(
+  "last_updates",
+  new Date(data.items[0].created_at) .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+);
+    } catch (error) {
+      console.error("Error fetching digest items:", error)
+      setError("Failed to fetch digest items")
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   const handleSendDigest = async () => {
     try {

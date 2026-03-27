@@ -180,8 +180,9 @@ export default function SettingsPage() {
                   <div className="space-y-2">
                     <Label htmlFor="time" className="text-sm">Delivery Time</Label>
                     <Input
-                      id="time"
+                      id="time" 
                       type="time"
+                      max={"06:00"}
                       value={settings.deliveryTime}
                       onChange={(e) => update("deliveryTime", e.target.value)}
                       className="bg-card border-border w-32"

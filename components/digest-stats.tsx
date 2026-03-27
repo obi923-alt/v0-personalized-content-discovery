@@ -36,7 +36,7 @@ export function DigestStats({ items }: DigestStatsProps) {
       color: "text-chart-3",
     },
     {
-      label: "High Priority",
+      label: "High Relevance",
       value: highRelevanceCount,
       icon: Clock,
       color: "text-chart-5",
