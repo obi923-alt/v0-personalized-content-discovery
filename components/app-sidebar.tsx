@@ -14,6 +14,8 @@ import {
   Sparkles,
   Menu
 } from "lucide-react"
+import { useSettings } from "@/app/context/SettingsContext"
+import { useInterestProfile } from "@/app/context/InterestProfileContext"
 
 const navigation = [
   { name: "Today's Digest", href: "/", icon: Newspaper },
@@ -24,8 +26,20 @@ const navigation = [
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
+  const { isDirty: isSettingsDirty } = useSettings()
+  const { isDirty: isProfileDirty } = useInterestProfile()
 
-  const lastUpdated = typeof window !== 'undefined' ? localStorage.getItem("last_updates") || "00:00 AM" : "00:00 AM"
+  const lastUpdated = "10:00AM"
+
+  const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (pathname !== href && (isSettingsDirty || isProfileDirty)) {
+      if (!window.confirm("You have unsaved changes. Are you sure you want to leave?")) {
+        e.preventDefault()
+        return
+      }
+    }
+    onNavigate?.()
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -43,7 +57,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <Link
               key={item.name}
               href={item.href}
-              onClick={onNavigate}
+              onClick={(e) => handleNavigate(e, item.href)}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                 isActive

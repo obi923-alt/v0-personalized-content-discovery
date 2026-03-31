@@ -13,6 +13,7 @@ import {
   Loader2, AlertCircle, Check,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
+import { useSettings } from "../context/SettingsContext"
 
 type Settings = {
   email:              string
@@ -35,32 +36,20 @@ const DEFAULTS: Settings = {
 }
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<Settings>(DEFAULTS)
-  const [loading, setLoading]   = useState(true)
+  const { settings, loading, error, setSettings, setError, isDirty, setIsDirty } = useSettings()
   const [saving, setSaving]     = useState(false)
-  const [error, setError]       = useState<string | null>(null)
   const [saved, setSaved]       = useState(false)
 
-  // ── Fetch on mount ───────────────────────────────────────────────────────
   useEffect(() => {
-    async function load() {
-      try {
-        setLoading(true)
-        setError(null)
-        const res = await fetch("/api/settings")
-        if (!res.ok) {
-          const body = await res.json()
-          throw new Error(body.error ?? "Failed to load settings")
-        }
-        setSettings(await res.json())
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error")
-      } finally {
-        setLoading(false)
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
       }
-    }
-    load()
-  }, [])
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
 
   // ── Save ─────────────────────────────────────────────────────────────────
   const handleSave = async () => {
@@ -85,6 +74,7 @@ export default function SettingsPage() {
       }
       setSettings(await res.json())
       setSaved(true)
+      setIsDirty(false)
       setTimeout(() => setSaved(false), 2500)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
@@ -93,8 +83,10 @@ export default function SettingsPage() {
     }
   }
 
-  const update = <K extends keyof Settings>(key: K, value: Settings[K]) =>
-    setSettings((prev) => ({ ...prev, [key]: value }))
+  const update = <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    setSettings((prev: Settings) => ({ ...prev, [key]: value }))
+    setIsDirty(true)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -248,7 +240,7 @@ export default function SettingsPage() {
               </Card>
 
               {/* Content Access */}
-              {/* <Card className="border-border shadow-sm">
+              <Card className="border-border shadow-sm">
                 <CardHeader className="pb-3 sm:pb-4">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4 text-chart-2" />
@@ -282,7 +274,7 @@ export default function SettingsPage() {
                     </Button>
                   </div>
                 </CardContent>
-              </Card> */}
+              </Card>
 
               {/* Data */}
               {/* <Card className="border-border shadow-sm">

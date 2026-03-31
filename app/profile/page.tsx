@@ -9,41 +9,52 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { mockInterestProfile } from "@/lib/mock-data"
 import type { InterestProfile } from "@/lib/types"
 import { Save, Sparkles, MapPin, Users, Hash, FileText } from "lucide-react"
+import { useInterestProfile } from "../context/InterestProfileContext"
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<InterestProfile>(mockInterestProfile);
+  const { interestProfile:profile, loading, error, loadInterestProfile:loadProfile, setInterestProfile:setProfile, setError, isDirty, setIsDirty } = useInterestProfile()
   const [saved, setSaved] = useState(false);
-  const [hasEditted,setHasEditted] = useState(false);
   const [isSaving,setIsSaving] = useState(false);
 
-  const fetchProfile = async () => {
-    try {
-      const response = await fetch("/api/interest_profile")
-      const data = await response.json()
-      setProfile(data.items[0])
-      console.log("profile",data)
-    } catch(e) {
-      console.error("Error fetching profile",e)
-    }
-  }
-
   useEffect(() => {
-    fetchProfile()
-  }, [])
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
+  // const fetchProfile = async () => {
+  //   try {
+  //     const response = await fetch("/api/interest_profile")
+  //     const data = await response.json()
+  //     setProfile(data.items[0])
+  //     console.log("profile",data)
+  //   } catch(e) {
+  //     console.error("Error fetching profile",e)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchProfile()
+  // }, [])
+  console.log("the profile",profile)
 
   const updateProfile = <K extends keyof InterestProfile>(
     key: K,
     value: InterestProfile[K]
   ) => {
     setProfile((prev) => ({ ...prev, [key]: value }))
-    setHasEditted(true)
+    setIsDirty(true)
     console.log("updating profile with",profile)
   }
 
   const handleSaveProfile = async () => {
     try {
       setIsSaving(true);
-      setHasEditted(false)
       const response = await fetch("/api/interest_profile", {
         method: "PUT",
         headers: {
@@ -52,6 +63,7 @@ export default function ProfilePage() {
         body: JSON.stringify(profile),
       })
       const data = await response.json()
+      setIsDirty(false)
       setSaved(true)
       setTimeout(() =>{ 
         setIsSaving(false)
@@ -78,7 +90,7 @@ export default function ProfilePage() {
                 Define your editorial interests for AI filtering
               </p>
             </div>
-            <Button onClick={handleSaveProfile} style={{cursor:"pointer"}} disabled={!hasEditted} className="gap-2 shadow-sm">
+            <Button onClick={handleSaveProfile} style={{cursor:"pointer"}} disabled={!isDirty} className="gap-2 shadow-sm">
               <Save className="h-4 w-4" />
               <span className="hidden sm:inline">{saved ? "Saved!" : "Save Profile"}</span>
               <span className="sm:hidden">{saved ? "Saved!" : "Save"}</span>

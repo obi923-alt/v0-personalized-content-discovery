@@ -12,7 +12,9 @@ import {
   ChevronDown,
   ChevronUp,
   FileText,
-  Twitter
+  Twitter,
+  ThumbsUpIcon,
+  ThumbsDown
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
@@ -178,13 +180,22 @@ export function DigestItem({ item }: DigestItemProps) {
               >
                 <Bookmark fill={isSaved ? "currentColor" : "none"} className="h-4 w-4" />
               </Button>
-              {/* <Button
+
+              <Button
                 variant="ghost"
                 size="icon"
                 className="hidden h-8 w-8 text-muted-foreground hover:text-foreground sm:inline-flex"
               >
-                <Share2 className="h-4 w-4" />
-              </Button> */}
+                <ThumbsUpIcon className="h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden h-8 w-8 text-muted-foreground hover:text-foreground sm:inline-flex"
+              >
+                <ThumbsDown className="h-4 w-4" />
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"

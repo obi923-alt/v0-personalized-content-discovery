@@ -21,11 +21,11 @@ export async function GET(request: NextRequest) {
         const [items, total] = await Promise.all([
             sql`
                 SELECT * FROM digest_items
-                WHERE (created_at >= NOW() - INTERVAL '1 day' OR saved = True) AND relevance_score >= ${settings[0].relevance_threshold}
+                WHERE (created_at >= NOW() - INTERVAL '3 day' OR saved = True) AND relevance_score >= ${settings[0].relevance_threshold}
                 ORDER BY created_at DESC
                 LIMIT ${settings[0].max_items}
             `,
-            sql`SELECT COUNT(*) FROM digest_items WHERE (created_at >= NOW() - INTERVAL '1 day' OR saved = True) AND relevance_score >= ${settings[0].relevance_threshold}` 
+            sql`SELECT COUNT(*) FROM digest_items WHERE (created_at >= NOW() - INTERVAL '3 day' OR saved = True) AND relevance_score >= ${settings[0].relevance_threshold}` 
         ])
         
 
