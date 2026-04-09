@@ -2,10 +2,20 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { 
   Newspaper, 
   Rss, 
@@ -26,19 +36,33 @@ const navigation = [
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
-  const { isDirty: isSettingsDirty } = useSettings()
-  const { isDirty: isProfileDirty } = useInterestProfile()
+  const router = useRouter()
+  const { isDirty: isSettingsDirty, setIsDirty: setSettingsDirty } = useSettings()
+  const { isDirty: isProfileDirty, setIsDirty: setProfileDirty } = useInterestProfile()
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [pendingHref, setPendingHref] = useState<string | null>(null)
 
   const lastUpdated = "10:00AM"
 
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (pathname !== href && (isSettingsDirty || isProfileDirty)) {
-      if (!window.confirm("You have unsaved changes. Are you sure you want to leave?")) {
-        e.preventDefault()
-        return
-      }
+      e.preventDefault()
+      setPendingHref(href)
+      setShowConfirmDialog(true)
+      return
     }
     onNavigate?.()
+  }
+
+  const handleConfirmLeave = () => {
+    if (pendingHref) {
+      setSettingsDirty(false)
+      setProfileDirty(false)
+      router.push(pendingHref)
+      onNavigate?.()
+    }
+    setShowConfirmDialog(false)
+    setPendingHref(null)
   }
 
   return (
@@ -80,6 +104,26 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </p>
         </div>
       </div>
+
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes in your profile or settings. Are you sure you want to leave? Your changes will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPendingHref(null)}>Stay</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmLeave}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Leave anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

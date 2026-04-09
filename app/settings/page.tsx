@@ -240,7 +240,7 @@ export default function SettingsPage() {
               </Card>
 
               {/* Content Access */}
-              <Card className="border-border shadow-sm">
+              {/* <Card className="border-border shadow-sm">
                 <CardHeader className="pb-3 sm:pb-4">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4 text-chart-2" />
@@ -274,7 +274,7 @@ export default function SettingsPage() {
                     </Button>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
               {/* Data */}
               {/* <Card className="border-border shadow-sm">
