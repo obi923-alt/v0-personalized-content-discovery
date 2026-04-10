@@ -2,10 +2,20 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { 
   Newspaper, 
   Rss, 
@@ -14,6 +24,10 @@ import {
   Sparkles,
   Menu
 } from "lucide-react"
+import { useSettings } from "@/app/context/SettingsContext"
+import { useInterestProfile } from "@/app/context/InterestProfileContext"
+import { useDigest } from "@/app/context/DigestContext"
+import { format } from "path"
 
 const navigation = [
   { name: "Today's Digest", href: "/", icon: Newspaper },
@@ -24,8 +38,35 @@ const navigation = [
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { isDirty: isSettingsDirty, setIsDirty: setSettingsDirty } = useSettings()
+  const { isDirty: isProfileDirty, setIsDirty: setProfileDirty } = useInterestProfile()
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [pendingHref, setPendingHref] = useState<string | null>(null)
+  const {digestItems} = useDigest()
+  const lastUpdated = digestItems?.length > 0 ? new Date(digestItems[0].created_at).toLocaleTimeString() : "10:00AM"
 
-  const lastUpdated =  "00:00 AM"
+  
+  const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (pathname !== href && (isSettingsDirty || isProfileDirty)) {
+      e.preventDefault()
+      setPendingHref(href)
+      setShowConfirmDialog(true)
+      return
+    }
+    onNavigate?.()
+  }
+
+  const handleConfirmLeave = () => {
+    if (pendingHref) {
+      setSettingsDirty(false)
+      setProfileDirty(false)
+      router.push(pendingHref)
+      onNavigate?.()
+    }
+    setShowConfirmDialog(false)
+    setPendingHref(null)
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -43,7 +84,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <Link
               key={item.name}
               href={item.href}
-              onClick={onNavigate}
+              onClick={(e) => handleNavigate(e, item.href)}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                 isActive
@@ -66,6 +107,26 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </p>
         </div>
       </div>
+
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes in your profile or settings. Are you sure you want to leave? Your changes will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPendingHref(null)}>Stay</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmLeave}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Leave anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

@@ -175,6 +175,7 @@ export function DigestItem({ item }: DigestItemProps) {
 
               {/* Expand / collapse */}
               <Button
+                style={{cursor:"pointer"}}
                 variant="ghost"
                 size="sm"
                 className="h-8 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground sm:gap-1.5 sm:px-3"
@@ -207,6 +208,7 @@ export function DigestItem({ item }: DigestItemProps) {
                 title="Helpful"
               >
                 <ThumbsUp
+                  
                   className="h-4 w-4"
                   fill={feedback === "thumbs up" ? "currentColor" : "none"}
                 />
@@ -224,6 +226,7 @@ export function DigestItem({ item }: DigestItemProps) {
                 )}
                 onClick={() => handleFeedback("thumbs down")}
                 title="Not helpful"
+                style={{cursor:"pointer"}}
               >
                 <ThumbsDown
                   className="h-4 w-4"
@@ -237,6 +240,7 @@ export function DigestItem({ item }: DigestItemProps) {
                 size="icon"
                 className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 onClick={handleSaveItem}
+                style={{cursor:"pointer"}}
               >
                 <Bookmark fill={isSaved ? "currentColor" : "none"} className="h-4 w-4" />
               </Button>

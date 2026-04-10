@@ -9,67 +9,72 @@ import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import emailjs from "@emailjs/browser"
 import { toast } from "sonner"
+import { useDigest } from "./context/DigestContext"
+import { useSettings } from "./context/SettingsContext"
 export default function DigestPage() {
   const today = new Date()
 
-  const [digestItems, setDigestItems] = useState<[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 20,
-    total: 0
-  })
-  const [email,setEmail] = useState("")
+  // const [digestItems, setDigestItems] = useState<[]>([])
+  // const [loading, setLoading] = useState(true)
+  // const [error, setError] = useState<string | null>(null)
+  // const [pagination, setPagination] = useState({
+  //   page: 1,
+  //   limit: 20,
+  //   total: 0
+  // })
+  // const [email,setEmail] = useState("")
 
-  const fetchSettings = async () =>{
-    try {
-      const response = await fetch(`/api/settings`)
-      if (!response.ok) {
-        throw new Error("Failed to fetch settings")
-      }
-      const data = await response.json()
-      setEmail(data.email)
-      console.log("the settings",data)
-    } catch (error) {
-      console.error("Error fetching settings:", error)
-    }
-  }
-  useEffect(() => {
-    fetchSettings()
-  }, [])
+  const {digestItems,loading,error,fetchDigestItems,saveDigestItem} = useDigest()
+  const {settings} = useSettings()
+
+//   const fetchSettings = async () =>{
+//     try {
+//       const response = await fetch(`/api/settings`)
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch settings")
+//       }
+//       const data = await response.json()
+//       setEmail(data.email)
+//       console.log("the settings",data)
+//     } catch (error) {
+//       console.error("Error fetching settings:", error)
+//     }
+//   }
+//   useEffect(() => {
+//     fetchSettings()
+//   }, [])
 
 
-  useEffect(() => {
-    fetchDigestItems()
-  }, [pagination.page])
+//   useEffect(() => {
+//     fetchDigestItems()
+//   }, [pagination.page])
   
 
-  const fetchDigestItems = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await fetch(`/api/digest_items?page=${pagination.page}&limit=${pagination.limit}`)
-      if (!response.ok) {
-        throw new Error("Failed to fetch digest items")
-      }
-      const data = await response.json()
-      console.log("the stuff",data.items)
-      console.log("his name",email)
-      setDigestItems(data.items)
-      setPagination(prev => ({ ...prev, total: data.total }))
-      localStorage.clear();
-localStorage.setItem(
-  "last_updates",
-  new Date(data.items[0].created_at) .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-);
-    } catch (error) {
-      console.error("Error fetching digest items:", error)
-      setError("Failed to fetch digest items")
-    } finally {
-      setLoading(false)
-    }
-  }
+//   const fetchDigestItems = async () => {
+//     setLoading(true)
+//     setError(null)
+//     try {
+//       const response = await fetch(`/api/digest_items?page=${pagination.page}&limit=${pagination.limit}`)
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch digest items")
+//       }
+//       const data = await response.json()
+//       console.log("the stuff",data.items)
+//       console.log("his name",email)
+//       setDigestItems(data.items)
+//       setPagination(prev => ({ ...prev, total: data.total }))
+//       localStorage.clear();
+// localStorage.setItem(
+//   "last_updates",
+//   new Date(data.items[0].created_at) .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+// );
+//     } catch (error) {
+//       console.error("Error fetching digest items:", error)
+//       setError("Failed to fetch digest items")
+//     } finally {
+//       setLoading(false)
+//     }
+//   }
 
 
   const handleSendDigest = async () => {
@@ -99,7 +104,7 @@ localStorage.setItem(
         dashboard_url: url,
         settings_url: `${url}/settings`,
         year: new Date().getFullYear(),
-        email: email
+        email: settings.email
       }
 
       // Map top 3 items

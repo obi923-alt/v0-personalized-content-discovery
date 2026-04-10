@@ -8,11 +8,17 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ManageCookiesModal } from "@/components/manage-cookies-modal"
+import { CookieHelpModal } from "@/components/cookie-help-modal"
 import {
   Save, Mail, SlidersHorizontal, Shield, Database,
   Loader2, AlertCircle, Check,
+  Info,
+  HelpCircle
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
+import { useSettings } from "../context/SettingsContext"
+import { cursorTo } from "readline"
 
 type Settings = {
   email:              string
@@ -35,32 +41,20 @@ const DEFAULTS: Settings = {
 }
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<Settings>(DEFAULTS)
-  const [loading, setLoading]   = useState(true)
+  const { settings, loading, error, setSettings, setError, isDirty, setIsDirty } = useSettings()
   const [saving, setSaving]     = useState(false)
-  const [error, setError]       = useState<string | null>(null)
   const [saved, setSaved]       = useState(false)
 
-  // ── Fetch on mount ───────────────────────────────────────────────────────
   useEffect(() => {
-    async function load() {
-      try {
-        setLoading(true)
-        setError(null)
-        const res = await fetch("/api/settings")
-        if (!res.ok) {
-          const body = await res.json()
-          throw new Error(body.error ?? "Failed to load settings")
-        }
-        setSettings(await res.json())
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error")
-      } finally {
-        setLoading(false)
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
       }
-    }
-    load()
-  }, [])
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
 
   // ── Save ─────────────────────────────────────────────────────────────────
   const handleSave = async () => {
@@ -85,6 +79,7 @@ export default function SettingsPage() {
       }
       setSettings(await res.json())
       setSaved(true)
+      setIsDirty(false)
       setTimeout(() => setSaved(false), 2500)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
@@ -93,8 +88,10 @@ export default function SettingsPage() {
     }
   }
 
-  const update = <K extends keyof Settings>(key: K, value: Settings[K]) =>
-    setSettings((prev) => ({ ...prev, [key]: value }))
+  const update = <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    setSettings((prev: Settings) => ({ ...prev, [key]: value }))
+    setIsDirty(true)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -216,7 +213,7 @@ export default function SettingsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="space-y-4">
+                  {/* <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="text-sm">Maximum Items</Label>
                       <span className="text-sm font-medium text-foreground">{settings.maxItems}</span>
@@ -227,9 +224,9 @@ export default function SettingsPage() {
                       min={10} max={30} step={5}
                     />
                     <p className="text-xs text-muted-foreground">
-                      Maximum number of items to include in each digest
+                      Maximum number of items to include in each daily digest
                     </p>
-                  </div>
+                  </div> */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="text-sm">Relevance Threshold</Label>
@@ -248,17 +245,24 @@ export default function SettingsPage() {
               </Card>
 
               {/* Content Access */}
-              {/* <Card className="border-border shadow-sm">
-                <CardHeader className="pb-3 sm:pb-4">
-                  <div className="flex items-center gap-2">
+              <Card className="border-border shadow-sm">
+                <CardHeader className="pb-3 sm:pb-1">
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4 text-chart-2" />
                     <CardTitle className="text-sm font-medium">Content Access</CardTitle>
+                    </div>
+                    <CookieHelpModal>
+                      <HelpCircle style={{cursor:"pointer"}} className="h-4 w-4 text-chart-2" />
+                    </CookieHelpModal>
                   </div>
                   <CardDescription className="text-xs sm:text-sm">
                     Configure authentication for paywalled content
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3">
+                  
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label className="text-sm">Paywall Bypass</Label>
@@ -266,10 +270,10 @@ export default function SettingsPage() {
                         Use stored cookies to access subscriber content
                       </p>
                     </div>
-                    <Switch
+                    {/* <Switch
                       checked={settings.paywallBypass}
                       onCheckedChange={(v) => update("paywallBypass", v)}
-                    />
+                    /> */}
                   </div>
                   <div className="rounded-lg bg-secondary p-3 sm:p-4">
                     <p className="text-xs text-muted-foreground sm:text-sm">
@@ -277,12 +281,14 @@ export default function SettingsPage() {
                       and upload them to the system. This allows the scraper to access content
                       you have legitimate access to through your subscriptions.
                     </p>
-                    <Button variant="outline" size="sm" className="mt-3">
-                      Manage Cookies
-                    </Button>
+                    <ManageCookiesModal>
+                      <Button variant="outline" size="sm" className="mt-3">
+                        Manage Cookies
+                      </Button>
+                    </ManageCookiesModal>
                   </div>
                 </CardContent>
-              </Card> */}
+              </Card>
 
               {/* Data */}
               {/* <Card className="border-border shadow-sm">

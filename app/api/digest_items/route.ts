@@ -15,20 +15,15 @@ export async function GET(request: NextRequest) {
       sql`SELECT * FROM app_settings`
     ])
 
-    const [items, total] = await Promise.all([
-      sql`
-        SELECT * FROM digest_items
-        WHERE (created_at >= NOW() - INTERVAL '1 day' OR saved = True)
-          AND relevance_score >= ${settings[0].relevance_threshold}
-        ORDER BY created_at DESC
-        LIMIT ${settings[0].max_items}
-      `,
-      sql`
-        SELECT COUNT(*) FROM digest_items
-        WHERE (created_at >= NOW() - INTERVAL '1 day' OR saved = True)
-          AND relevance_score >= ${settings[0].relevance_threshold}
-      `
-    ])
+        const [items, total] = await Promise.all([
+            sql`
+                SELECT * FROM digest_items
+                WHERE (created_at >= NOW() - INTERVAL '30 day' OR saved = True) AND relevance_score >= ${settings[0].relevance_threshold}
+                ORDER BY created_at DESC
+            `,
+            sql`SELECT COUNT(*) FROM digest_items WHERE (created_at >= NOW() - INTERVAL '30 day' OR saved = True) AND relevance_score >= ${settings[0].relevance_threshold}` 
+        ])
+        
 
     return NextResponse.json({ items, total, page, limit })
   } catch (error) {

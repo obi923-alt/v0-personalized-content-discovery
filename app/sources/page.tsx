@@ -8,41 +8,40 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import type { Source } from "@/lib/types"
 import { Search, Rss, Globe, Twitter, Loader2, AlertCircle } from "lucide-react"
+import { useSources } from "../context/SourcesContext"
 
 export default function SourcesPage() {
-  const [sources, setSources]         = useState<Source[]>([])
-  const [loading, setLoading]         = useState(true)
-  const [error, setError]             = useState<string | null>(null)
+  const {sources,loading,error,loadSources,setSources,setError} = useSources()
   const [searchQuery, setSearchQuery] = useState("")
   const [filterType, setFilterType]   = useState<string | null>(null)
 
   // ── Fetch on mount ───────────────────────────────────────────────────────
-  useEffect(() => {
-    loadSources()
-  }, [])
+  // useEffect(() => {
+  //   loadSources()
+  // }, [])
 
-  async function loadSources() {
-    try {
-      setLoading(true)
-      setError(null)
-      const res = await fetch("/api/sources")
-      if (!res.ok) {
-        const body = await res.json()
-        throw new Error(body.error ?? "Failed to load sources")
-      }
-      const data: Source[] = await res.json()
-      setSources(
-        data.map((s) => ({
-          ...s,
-          lastFetched: s.lastFetched ? new Date(s.lastFetched) : undefined,
-        }))
-      )
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-    } finally {
-      setLoading(false)
-    }
-  }
+  // async function loadSources() {
+  //   try {
+  //     setLoading(true)
+  //     setError(null)
+  //     const res = await fetch("/api/sources")
+  //     if (!res.ok) {
+  //       const body = await res.json()
+  //       throw new Error(body.error ?? "Failed to load sources")
+  //     }
+  //     const data: Source[] = await res.json()
+  //     setSources(
+  //       data.map((s) => ({
+  //         ...s,
+  //         lastFetched: s.lastFetched ? new Date(s.lastFetched) : undefined,
+  //       }))
+  //     )
+  //   } catch (err) {
+  //     setError(err instanceof Error ? err.message : "Unknown error")
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
   // ── Add → persists to DB ─────────────────────────────────────────────────
   const handleAdd = async (newSource: Omit<Source, "id" | "enabled" | "lastFetched">) => {

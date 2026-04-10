@@ -4,7 +4,7 @@ import { useState } from "react"
 import { DigestItem } from "./digest-item"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import type { DigestItem as DigestItemType, ContentTag } from "@/lib/types"
+import type { DigestItem as DigestItemType, ContentType } from "@/lib/types"
 import { Search, Filter, SlidersHorizontal } from "lucide-react"
 import {
   DropdownMenu,
@@ -12,6 +12,8 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { isToday } from "date-fns"
 
 interface DigestListProps {
   items: DigestItemType[]
@@ -20,9 +22,10 @@ interface DigestListProps {
 
 export function DigestList({ items, loading }: DigestListProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedTags, setSelectedTags] = useState<ContentTag[]>([])
+  const [selectedTypes, setSelectedTypes] = useState<ContentType[]>([])
   const [sortBy, setSortBy] = useState<"relevance" | "date">("relevance")
   const [filterSaved, setFilterSaved] = useState(false)
+  const [timeFilter, setTimeFilter] = useState<"today" | "all">("today")
 
   const filteredItems = items
     .filter((item) => {
@@ -31,11 +34,14 @@ export function DigestList({ items, loading }: DigestListProps) {
         item.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.source_name.toLowerCase().includes(searchQuery.toLowerCase())
       
-      const matchesTags = selectedTags.length === 0 || 
-        selectedTags.some((tag) => item.tags.includes(tag))
+      const matchesTypes = selectedTypes.length === 0 || 
+        selectedTypes.includes(item.type)
       
       const matchesSaved = filterSaved ? item.saved : true
-      return matchesSearch && matchesTags && matchesSaved
+      
+      const matchesTime = timeFilter === "all" || isToday(new Date(item.published_at))
+      
+      return matchesSearch && matchesTypes && matchesSaved && matchesTime
     })
     .sort((a, b) => {
       if (sortBy === "relevance") {
@@ -44,9 +50,9 @@ export function DigestList({ items, loading }: DigestListProps) {
       return new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
     })
 
-  const toggleTag = (tag: ContentTag) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+  const toggleType = (type: ContentType) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     )
   }
 
@@ -78,20 +84,29 @@ export function DigestList({ items, loading }: DigestListProps) {
           />
         </div>
 
+        <Tabs  value={timeFilter} onValueChange={(v) => setTimeFilter(v as "today" | "all")} className="w-auto">
+          <TabsList>
+            <TabsTrigger style={{cursor:"pointer"}} value="today">Today</TabsTrigger>
+            <TabsTrigger style={{cursor:"pointer"}} value="all">All Items</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <div className="flex gap-1">
-            {(["essay", "newsletter", "social"] as ContentTag[]).map((tag) => (
+            {(["article", "tweet"] as ContentType[]).map((type) => (
               <Button
-                key={tag}
-                variant={selectedTags.includes(tag) ? "default" : "outline"}
+                key={type}
+                variant={selectedTypes.includes(type) ? "default" : "outline"}
                 size="sm"
-                onClick={() => toggleTag(tag)}
+                onClick={() => toggleType(type)}
                 className="text-xs whitespace-nowrap"
+                style={{cursor:"pointer"}}
               >
-                {tag === "essay" ? "Essays" : tag === "newsletter" ? "Newsletter" : "Social"}
+                {type === "article" ? "Articles" : "Tweets"}
               </Button>
             ))}
                  <Button
+                 style={{cursor:"pointer"}}
                 variant={filterSaved ? "default" : "outline"}
                 size="sm"
                 onClick={handleFilterSaved}
@@ -103,7 +118,7 @@ export function DigestList({ items, loading }: DigestListProps) {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5 whitespace-nowrap">
+              <Button style={{cursor:"pointer"}} variant="outline" size="sm" className="gap-1.5 whitespace-nowrap">
                 <SlidersHorizontal className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Sort</span>
               </Button>
@@ -112,12 +127,14 @@ export function DigestList({ items, loading }: DigestListProps) {
               <DropdownMenuCheckboxItem
                 checked={sortBy === "relevance"}
                 onCheckedChange={() => setSortBy("relevance")}
+                style={{cursor:"pointer"}}
               >
                 By Relevance
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={sortBy === "date"}
                 onCheckedChange={() => setSortBy("date")}
+                style={{cursor:"pointer"}}
               >
                 By Date
               </DropdownMenuCheckboxItem>
@@ -130,11 +147,11 @@ export function DigestList({ items, loading }: DigestListProps) {
         <p className="text-xs text-muted-foreground sm:text-sm">
           Showing {filteredItems.length} of {items.length} items
         </p>
-        {selectedTags.length > 0 && (
+        {selectedTypes.length > 0 && (
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => setSelectedTags([])}
+            onClick={() => setSelectedTypes([])}
             className="text-xs text-muted-foreground"
           >
             Clear filters
