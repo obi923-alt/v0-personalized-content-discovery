@@ -1,19 +1,18 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { DigestItem as DigestItemType } from "@/lib/types"
-import { 
-  ExternalLink, 
-  Bookmark, 
-  Share2, 
+import {
+  ExternalLink,
+  Bookmark,
   ChevronDown,
   ChevronUp,
   FileText,
   Twitter,
-  ThumbsUpIcon,
+  ThumbsUp,
   ThumbsDown
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
@@ -28,38 +27,56 @@ const tagColors: Record<string, string> = {
   social: "bg-chart-3/10 text-chart-3 border-chart-3/20",
 }
 
-const tagLabels: Record<string, string> = {
-  essay: "Essay Inspiration",
-  newsletter: "Newsletter",
-  social: "Social Share",
-}
-
 export function DigestItem({ item }: DigestItemProps) {
-  const [expanded, setExpanded] = useState(false);
-  const [isSaved, setIsSaved] = useState(item.saved);
-  const handleSaveItem = async ()=>{
+  const [expanded, setExpanded] = useState(false)
+  const [isSaved, setIsSaved] = useState(item.saved)
+  const [feedback, setFeedback] = useState<"thumbs up" | "thumbs down" | null>(
+    item.feedback ?? null
+  )
+
+  const handleSaveItem = async () => {
     try {
       const response = await fetch("/api/digest_items", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: item.id }),
-      });
-      const data = await response.json();
+      })
+      const data = await response.json()
       if (data.success) {
-        setIsSaved(!isSaved);
+        setIsSaved(!isSaved)
       }
-    } catch(e){
-      console.error("Error saving digest item:", e);
+    } catch (e) {
+      console.error("Error saving digest item:", e)
     }
+  }
 
+  const handleFeedback = async (value: "thumbs up" | "thumbs down") => {
+    const newFeedback = feedback === value ? null : value
+
+    // Optimistic update
+    setFeedback(newFeedback)
+
+    try {
+      const response = await fetch("/api/digest_items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: item.id, feedback: newFeedback }),
+      })
+      const data = await response.json()
+      if (!data.success) {
+        setFeedback(feedback) // revert on failure
+      }
+    } catch (e) {
+      console.error("Error submitting feedback:", e)
+      setFeedback(feedback) // revert on error
+    }
   }
 
   return (
     <article className="group rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:shadow-foreground/5 sm:p-5 sm:hover:-translate-y-0.5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        {/* Icon - hidden on mobile, shown on larger screens */}
+
+        {/* Icon - hidden on mobile */}
         <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary/80 sm:flex">
           {item.type === "tweet" ? (
             <Twitter className="h-5 w-5 text-chart-1" />
@@ -69,7 +86,8 @@ export function DigestItem({ item }: DigestItemProps) {
         </div>
 
         <div className="min-w-0 flex-1">
-          {/* Mobile: row with icon, source, score */}
+
+          {/* Mobile: icon + source + score */}
           <div className="flex items-start gap-3 sm:hidden">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary/80">
               {item.type === "tweet" ? (
@@ -87,12 +105,12 @@ export function DigestItem({ item }: DigestItemProps) {
                 </time>
               </div>
             </div>
-            <div 
+            <div
               className={cn(
                 "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
-                item.relevance_score >= 90 
-                  ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20" 
-                  : item.relevance_score >= 80 
+                item.relevance_score >= 90
+                  ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20"
+                  : item.relevance_score >= 80
                     ? "bg-gradient-to-br from-chart-1/15 to-chart-1/5 text-chart-1 ring-1 ring-chart-1/20"
                     : "bg-secondary text-muted-foreground"
               )}
@@ -120,9 +138,9 @@ export function DigestItem({ item }: DigestItemProps) {
             {item.type === "tweet" ? (
               <span className="font-normal">{item.title}</span>
             ) : (
-              <a 
-                href={item.url} 
-                target="_blank" 
+              <a
+                href={item.url}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-primary transition-colors"
               >
@@ -131,6 +149,7 @@ export function DigestItem({ item }: DigestItemProps) {
             )}
           </h3>
 
+          {/* Expandable summary */}
           <div className={cn(
             "mt-3 overflow-hidden transition-all duration-300",
             expanded ? "max-h-96" : "max-h-0"
@@ -140,20 +159,23 @@ export function DigestItem({ item }: DigestItemProps) {
             </p>
           </div>
 
+          {/* Action bar */}
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {item.tags.map((tag) => (
-              <Badge 
-                key={tag} 
+              <Badge
+                key={tag}
                 variant="outline"
                 className={cn("text-xs font-normal", tagColors["newsletter"])}
               >
-                <span className="hidden sm:inline">{tag}</span>
-                <span className="sm:hidden">{tag}</span>
+                {tag}
               </Badge>
             ))}
-            
+
             <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
+
+              {/* Expand / collapse */}
               <Button
+                style={{cursor:"pointer"}}
                 variant="ghost"
                 size="sm"
                 className="h-8 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground sm:gap-1.5 sm:px-3"
@@ -171,31 +193,60 @@ export function DigestItem({ item }: DigestItemProps) {
                   </>
                 )}
               </Button>
+
+              {/* Thumbs up */}
               <Button
                 style={{cursor:"pointer"}}
                 variant="ghost"
                 size="icon"
+                className={cn(
+                  "h-8 w-8 transition-colors",
+                  feedback === "thumbs up"
+                    ? "text-emerald-500 hover:text-emerald-600"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+                onClick={() => handleFeedback("thumbs up")}
+                title="Helpful"
+              >
+                <ThumbsUp
+                  
+                  className="h-4 w-4"
+                  fill={feedback === "thumbs up" ? "currentColor" : "none"}
+                />
+              </Button>
+
+              {/* Thumbs down */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "h-8 w-8 transition-colors",
+                  feedback === "thumbs down"
+                    ? "text-rose-500 hover:text-rose-600"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+                onClick={() => handleFeedback("thumbs down")}
+                title="Not helpful"
+                style={{cursor:"pointer"}}
+              >
+                <ThumbsDown
+                  className="h-4 w-4"
+                  fill={feedback === "thumbs down" ? "currentColor" : "none"}
+                />
+              </Button>
+
+              {/* Save / bookmark */}
+              <Button
+                variant="ghost"
+                size="icon"
                 className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 onClick={handleSaveItem}
+                style={{cursor:"pointer"}}
               >
                 <Bookmark fill={isSaved ? "currentColor" : "none"} className="h-4 w-4" />
               </Button>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hidden h-8 w-8 text-muted-foreground hover:text-foreground sm:inline-flex"
-              >
-                <ThumbsUpIcon className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hidden h-8 w-8 text-muted-foreground hover:text-foreground sm:inline-flex"
-              >
-                <ThumbsDown className="h-4 w-4" />
-              </Button>
+              {/* Open link */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -213,12 +264,12 @@ export function DigestItem({ item }: DigestItemProps) {
 
         {/* Desktop: relevance score */}
         <div className="hidden shrink-0 text-right sm:block">
-          <div 
+          <div
             className={cn(
               "inline-flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold",
-              item.relevance_score >= 90 
-                ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20" 
-                : item.relevance_score >= 80 
+              item.relevance_score >= 90
+                ? "bg-gradient-to-br from-chart-5/20 to-chart-5/10 text-chart-5 ring-1 ring-chart-5/20"
+                : item.relevance_score >= 80
                   ? "bg-gradient-to-br from-chart-1/15 to-chart-1/5 text-chart-1 ring-1 ring-chart-1/20"
                   : "bg-secondary text-muted-foreground"
             )}

@@ -15,6 +15,8 @@ export interface DigestItem {
   tags: ContentTag[]
   saved: boolean
   imageUrl?: string
+  feedback?: "thumbs up" | "thumbs down" | null
+  created_at: Date
 }
 
 export interface Source {
@@ -25,6 +27,7 @@ export interface Source {
   category: string
   enabled: boolean
   lastFetched?: Date
+  cookies_url?: string
 }
 
 export interface InterestProfile {

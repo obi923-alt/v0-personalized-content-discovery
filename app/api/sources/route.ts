@@ -18,6 +18,7 @@ function rowToSource(row: Record<string, unknown>): Source {
     category:    (row.category as string) ?? "",
     enabled:     (row.enabled as boolean) ?? true,
     lastFetched: row.last_crawled ? new Date(row.last_crawled as string) : undefined,
+    cookies_url: row.cookies_url as string | undefined,
   }
 }
 
@@ -26,7 +27,7 @@ export async function GET() {
   try {
     const sql = getDb()
     const rows = await sql`
-      SELECT id, name, url, type, category, enabled, last_crawled
+      SELECT id, name, url, type, category, enabled, last_crawled, cookies_url
       FROM sources
       ORDER BY name ASC
     `

@@ -10,6 +10,7 @@ import { useEffect, useState } from "react"
 import emailjs from "@emailjs/browser"
 import { toast } from "sonner"
 import { useDigest } from "./context/DigestContext"
+import { useSettings } from "./context/SettingsContext"
 export default function DigestPage() {
   const today = new Date()
 
@@ -24,7 +25,7 @@ export default function DigestPage() {
   // const [email,setEmail] = useState("")
 
   const {digestItems,loading,error,fetchDigestItems,saveDigestItem} = useDigest()
-  console.log("The items",digestItems)
+  const {settings} = useSettings()
 
 //   const fetchSettings = async () =>{
 //     try {
@@ -103,7 +104,7 @@ export default function DigestPage() {
         dashboard_url: url,
         settings_url: `${url}/settings`,
         year: new Date().getFullYear(),
-        email: email
+        email: settings.email
       }
 
       // Map top 3 items
