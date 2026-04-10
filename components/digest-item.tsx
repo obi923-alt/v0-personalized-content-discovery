@@ -196,7 +196,6 @@ export function DigestItem({ item }: DigestItemProps) {
 
               {/* Thumbs up */}
               <Button
-                style={{cursor:"pointer"}}
                 variant="ghost"
                 size="icon"
                 className={cn(
